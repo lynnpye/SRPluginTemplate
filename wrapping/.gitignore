@@ -1,4 +1,4 @@
-./*
-!wrap.cmd
-!ModBepInExCfg/**
-!configs/*.cfg
+/*
+!/wrap.cmd
+!/configs
+!/ModBepInExCfg
