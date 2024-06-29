@@ -52,7 +52,8 @@ So if your SRHK.exe is located at "C:\Program Files (x86)\Steam\steamapps\common
 
 ### Selective compilation
 While the SRPluginShared code is mostly compatible across versions, there are of course some difference, so when you are creating patches, you may need to opt to exclude them from one or two of the three game versions. I'm using preprocessor directives with functional names.
-	* NARROWKARMABUTTONS - This directive attempts to scale the karma screen buttons to be more narrow to fit all 20 in horizontally. Only of interest when MaxAttributes20 feature is enabled.
+
+* NARROWKARMABUTTONS - This directive attempts to scale the karma screen buttons to be more narrow to fit all 20 in horizontally. Only of interest when MaxAttributes20 feature is enabled.
 
 ### And then
 Download this template and edit things like project names, versions, etc. You may need to edit the .csproj manually.
