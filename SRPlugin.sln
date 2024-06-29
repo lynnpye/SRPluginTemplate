@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35013.160
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFDCPlugin", "DFDCPlugin\DFDCPlugin.csproj", "{E4B06425-0ABF-407E-A285-3A1E7D3D8DB6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SRHKPlugin", "SRHKPlugin\SRHKPlugin.csproj", "{2C1C4177-CC22-4617-BF4B-E1682D718807}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SRPluginShared", "SRPluginShared\SRPluginShared.shproj", "{A351A7C4-EE2C-49E3-B6DC-83AEC127B29C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E4B06425-0ABF-407E-A285-3A1E7D3D8DB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4B06425-0ABF-407E-A285-3A1E7D3D8DB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4B06425-0ABF-407E-A285-3A1E7D3D8DB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4B06425-0ABF-407E-A285-3A1E7D3D8DB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C1C4177-CC22-4617-BF4B-E1682D718807}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C1C4177-CC22-4617-BF4B-E1682D718807}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C1C4177-CC22-4617-BF4B-E1682D718807}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C1C4177-CC22-4617-BF4B-E1682D718807}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AEAFF2B6-2D4D-4FD1-8EA8-697CA9B68046}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		SRPluginShared\SRPluginShared.projitems*{2c1c4177-cc22-4617-bf4b-e1682d718807}*SharedItemsImports = 5
+		SRPluginShared\SRPluginShared.projitems*{a351a7c4-ee2c-49e3-b6dc-83aec127b29c}*SharedItemsImports = 13
+		SRPluginShared\SRPluginShared.projitems*{e4b06425-0abf-407e-a285-3a1e7d3d8db6}*SharedItemsImports = 5
+	EndGlobalSection
+EndGlobal

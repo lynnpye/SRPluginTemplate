@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>a351a7c4-ee2c-49e3-b6dc-83aec127b29c</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>SRPluginShared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)FeatureClass.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FeatureConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FeatureEnum.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FeatureManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\AlwaysBeSprinting\AlwaysBeSprintingFeature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\Cheatier\CheatierFeature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\MaxAttributes20\MaxAttributes20Feature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\NoCostCyberware\NoCostCyberwareFeature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\OverrideStartingKarma\OverrideStartingKarmaFeature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IFeature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PrivateFieldAccessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SRPlugin.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Features\Readme.md">
+      <SubType>Component</SubType>
+    </None>
+  </ItemGroup>
+</Project>
