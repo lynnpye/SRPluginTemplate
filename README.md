@@ -32,6 +32,12 @@ Method = .cctor
 ```
 
 ## Developing your BepInEx plugin (i.e. your mod)
+### For Shadowrun Returns
+Add a new Environment Variable (personal or system, doesn't matter):
+	SRRInstallDir
+	<The folder where your Shadowrun.exe is located>
+So if your Shadowrun.exe is located at "C:\Program Files (x86)\Steam\steamapps\common\Shadowrun Returns\Shadowrun.exe", then SRRInstallDir would be set to "C:\Program Files (x86)\Steam\steamapps\common\Shadowrun Returns".
+
 ### For Shadowrun Dragonfall Director's Cut
 Add a new Environment Variable (personal or system, doesn't matter):
 	DFDCInstallDir
@@ -43,6 +49,10 @@ Add a new Environment Variable (personal or system, doesn't matter):
 	SRHKInstallDir
 	<The folder where your SRHK.exe is located>
 So if your SRHK.exe is located at "C:\Program Files (x86)\Steam\steamapps\common\Shadowrun Hong Kong\SRHK.exe", then SRHKInstallDir would be set to "C:\Program Files (x86)\Steam\steamapps\common\Shadowrun Hong Kong".
+
+### Selective compilation
+While the SRPluginShared code is mostly compatible across versions, there are of course some difference, so when you are creating patches, you may need to opt to exclude them from one or two of the three game versions. I'm using preprocessor directives with functional names.
+	* NARROWKARMABUTTONS - This directive attempts to scale the karma screen buttons to be more narrow to fit all 20 in horizontally. Only of interest when MaxAttributes20 feature is enabled.
 
 ### And then
 Download this template and edit things like project names, versions, etc. You may need to edit the .csproj manually.
