@@ -11,7 +11,7 @@ namespace SRPlugin
         private static int DefaultOverrideStartingKarma = 60;
         private static bool DefaultAlwaysBeSprinting = true;
         private static bool DefaultMaxAttributes20 = true;
-#if DFDC
+#if NARROWKARMABUTTONS
         private static bool DefaultNarrowKarmaButtons = true;
         private static bool DefaultSimulatedClickLastPossible = true;
 #endif
@@ -22,7 +22,7 @@ namespace SRPlugin
         private static int? NowOverrideStartingKarma = null;
         private static bool? NowAlwaysBeSprinting = null;
         private static bool? NowMaxAttributes20 = null;
-#if DFDC
+#if NARROWKARMABUTTONS
         private static bool? NowNarrowKarmaButtons = null;
         private static bool? NowSimulatedClickLastPossible = null;
 #endif
@@ -33,7 +33,7 @@ namespace SRPlugin
         private static ConfigEntry<int> ConfigOverrideStartingKarma { get; set; }
         private static ConfigEntry<bool> ConfigAlwaysBeSprinting { get; set; }
         private static ConfigEntry<bool> ConfigMaxAttributes20 { get; set; }
-#if DFDC
+#if NARROWKARMABUTTONS
         private static ConfigEntry<bool> ConfigNarrowKarmaButtons { get; set; }
         private static ConfigEntry<bool> ConfigSimulatedClickLastPossible { get; set; }
 #endif
@@ -122,7 +122,7 @@ namespace SRPlugin
             }
         }
 
-#if DFDC
+#if NARROWKARMABUTTONS
         public static bool NarrowKarmaButtons
         {
             get
@@ -204,7 +204,7 @@ namespace SRPlugin
             ConfigAlwaysBeSprinting = configFile.Bind(FEATURES_SECTION, nameof(FeatureConfig.AlwaysBeSprinting), true, "makes some of the longer treks not so bad");
 
             ConfigMaxAttributes20 = configFile.Bind(FEATURES_SECTION, nameof(FeatureConfig.MaxAttributes20), true, "20 fits nicely, you should see my fix for DF lol");
-#if DFDC
+#if NARROWKARMABUTTONS
             ConfigNarrowKarmaButtons = configFile.Bind(FEATURES_SECTION, nameof(FeatureConfig.NarrowKarmaButtons), true, "you'll probably want this, makes the karma buttons narrower to fit all 20 points");
             ConfigSimulatedClickLastPossible = configFile.Bind(FEATURES_SECTION, nameof(FeatureConfig.SimulatedClickLastPossible), true, "In karma spending, clicking on karma block 20 simulates clicking the last open karma block, like in SRHK");
 #endif

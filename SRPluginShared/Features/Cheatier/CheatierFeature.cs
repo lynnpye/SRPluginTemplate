@@ -93,7 +93,13 @@ namespace SRPlugin.Features.Cheatier
                             Player player = TurnDirector.ActivePlayer;
                             if (player != null)
                             {
+#if !SRR
                                 StatsUtil.SetAttribute(player, global::isogame.Attribute.Attribute_Max_HP, player.baseAttributes.hp + 50);
+#else
+                                int baseHP = StatsUtil.GetAttribute(player, isogame.Attribute.Attribute_HP, true);
+                                baseHP += 50;
+                                StatsUtil.SetAttribute(player, isogame.Attribute.Attribute_HP, baseHP);
+#endif
                                 RunManager.Instance.DirectAddHP(50, null);
                                 Logger.Log(LogChannel.CONSOLE_DESIGNER, LogLevel.Info, "HPMax add 50 (bigger and tougher) ");
                                 LazySingletonBehavior<Analyzer>.Instance.CountCheat(1);
@@ -137,19 +143,32 @@ namespace SRPlugin.Features.Cheatier
                             LazySingletonBehavior<InputManager>.Instance.ConsumeFrame();
                         }
                     }
+#if !SRR
                     bool flag = LazySingletonBehavior<Analyzer>.HasInstance() && LazySingletonBehavior<Analyzer>.Instance.CurrentGameCheated();
                     string text4 = ((!showCheats) ? "< Cheatier" : "> Cheatier");
                     if (GUILayout.Button(text4, (!flag) ? __instance.styleTwo : __instance.styleOne,
                         new GUILayoutOption[]
                         {
-                        GUILayout.Width(88f),
-                        GUILayout.Height(butHeight)
+                            GUILayout.Width(88f),
+                            GUILayout.Height(butHeight)
                         }
                        ))
                     {
                         __instance.ToggleCheats();
                         AfterDebugInput(__instance);
                     }
+#else
+                    string text5 = ((!showCheats) ? "< Cheatier" : "> Cheatier");
+                    if (GUILayout.Button(text5, new GUILayoutOption[]
+                    {
+                        GUILayout.Width(88f),
+                        GUILayout.Height(butHeight)
+                    }))
+                    {
+                        __instance.ToggleCheats();
+                        AfterDebugInput(__instance);
+                    }
+#endif
                     GUILayout.EndHorizontal();
                     GUILayout.EndVertical();
                     GUILayout.EndArea();

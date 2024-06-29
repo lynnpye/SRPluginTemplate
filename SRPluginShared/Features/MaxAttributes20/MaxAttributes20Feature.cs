@@ -6,7 +6,7 @@ namespace SRPlugin.Features.MaxAttributes20
     [FeatureClass(FeatureEnum.MaxAttributes20)]
     internal class MaxAttributes20Feature : IFeature
     {
-#if DFDC
+#if NARROWKARMABUTTONS
         public static float? ORIGINAL_BLOCK_WIDTH = null;
         public static float? ORIGINAL_BLOCK_HALF_WIDTH = null;
 
@@ -25,6 +25,10 @@ namespace SRPlugin.Features.MaxAttributes20
 
         public void UnapplyPatches()
         {
+            SRPlugin.Harmony.Unpatch(
+                typeof(StatsUtil).GetMethod(nameof(StatsUtil.IsNewEtiquetteLevel)),
+                typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.IsNewEtiquetteLevelPostfix))
+                );
             SRPlugin.Harmony.Unpatch(
                 typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax)),
                 typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Postfix))
@@ -49,7 +53,7 @@ namespace SRPlugin.Features.MaxAttributes20
                 typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Troll)),
                 typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Troll_Postfix))
                 );
-#if DFDC
+#if NARROWKARMABUTTONS
             SRPlugin.Harmony.Unpatch(
                 typeof(KarmaEntry2).GetMethod(nameof(KarmaEntry2.OnBlockClick)),
                 typeof(KarmaEntry2SimulatedClickLastPossiblePatch).GetMethod(nameof(KarmaEntry2SimulatedClickLastPossiblePatch.OnBlockClickPrefix))
@@ -68,7 +72,7 @@ namespace SRPlugin.Features.MaxAttributes20
         public void ApplyPatches()
         {
             SRPlugin.Harmony.PatchAll(typeof(StatsUtilGetAttributeMaxPatch));
-#if DFDC
+#if NARROWKARMABUTTONS
             SRPlugin.Harmony.PatchAll(typeof(KarmaEntry2SimulatedClickLastPossiblePatch));
 #endif
         }
@@ -79,6 +83,16 @@ namespace SRPlugin.Features.MaxAttributes20
         [HarmonyPatch(typeof(StatsUtil))]
         internal class StatsUtilGetAttributeMaxPatch
         {
+            [HarmonyPostfix]
+            [HarmonyPatch(nameof(StatsUtil.IsNewEtiquetteLevel))]
+            public static void IsNewEtiquetteLevelPostfix(ref bool __result, int charisma)
+            {
+                if (charisma > (2 * Constants.NUM_ETIQUETTES))
+                {
+                    __result = false;
+                }
+            }
+
             [HarmonyPostfix]
             [HarmonyPatch(nameof(StatsUtil.GetAttributeMax))]
             public static void GetAttributeMax_Postfix(ref int __result, isogame.Attribute entry)
@@ -160,7 +174,7 @@ namespace SRPlugin.Features.MaxAttributes20
         }
 
 
-#if DFDC
+#if NARROWKARMABUTTONS
         [HarmonyPatch(typeof(KarmaEntry2))]
         internal class KarmaEntry2SimulatedClickLastPossiblePatch
         {
