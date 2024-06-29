@@ -4,8 +4,7 @@ BepInEx based mod template
 To use this template:
 
 ## Install BepInEx
-Go to the [BepInEx Releases page](https://github.com/BepInEx/BepInEx/releases/) and download [(link to the release tag) BepInEx_win_x86_5.4.23.2.zip](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.23.2) [(direct link to the zip BepInEx_win_x86_5.4.23.2.zip
-)](https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.2/BepInEx_win_x86_5.4.23.2.zip) and install it to your game folder as normal.
+Go to the [BepInEx Releases page](https://github.com/BepInEx/BepInEx/releases/) and download BepInEx_win_x86_5.4.23.2.zip [(link to the release tag)](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.23.2) [(direct link to the zip)](https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.2/BepInEx_win_x86_5.4.23.2.zip) and install it to your game folder as normal.
 
 Run the game once now that BepInEx is installed. The game will likely crash. If it does not, exit the game as soon as the main menu appears.
 
