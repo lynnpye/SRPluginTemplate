@@ -1,29 +1,52 @@
 ﻿using HarmonyLib;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
-using SRPlugin;
 
 namespace SRPlugin.Features.Cheatier
 {
-    [FeatureClass(FeatureEnum.Cheatier)]
-    internal class CheatierFeature : IFeature
+    public class CheatierFeature : FeatureImpl
     {
-        public void UnapplyPatches()
-        {
-            SRPlugin.Harmony.Unpatch(
-                typeof(DebugConsole).GetMethod("AfterDebugInput"),
-                typeof(DebugConsolePatch).GetMethod(nameof(DebugConsolePatch.AfterDebugInput))
-                );
+        private static ConfigItem<bool> CICheatier;
 
+        public CheatierFeature()
+            : base(new List<ConfigItemBase>()
+            {
+                (CICheatier = new ConfigItem<bool>(FEATURES_SECTION, nameof(Cheatier), true, "adds a new, cheatier, cheat bar"))
+            })
+        {
+
+        }
+
+        public override void HandleDisabled()
+        {
             SRPlugin.Harmony.Unpatch(
                 typeof(DebugConsole).GetMethod("DrawCheatBar"),
                 typeof(DebugConsolePatch).GetMethod(nameof(DebugConsolePatch.DrawCheatBarPrefix))
                 );
+
+            SRPlugin.Harmony.Unpatch(
+                typeof(DebugConsole).GetMethod("AfterDebugInput"),
+                typeof(DebugConsolePatch).GetMethod(nameof(DebugConsolePatch.AfterDebugInput))
+                );
         }
 
-        public void ApplyPatches()
+        public override void HandleEnabled()
         {
             SRPlugin.Harmony.PatchAll(typeof(DebugConsolePatch));
+        }
+
+        public static bool Cheatier
+        {
+            get
+            {
+                return CICheatier.GetValue();
+            }
+
+            set
+            {
+                CICheatier.SetValue(value);
+            }
         }
 
         [HarmonyPatch(typeof(DebugConsole))]
@@ -39,7 +62,7 @@ namespace SRPlugin.Features.Cheatier
             [HarmonyPatch("DrawCheatBar")]
             public static void DrawCheatBarPrefix(DebugConsole __instance)
             {
-                if (!FeatureConfig.Cheatier) return;
+                if (!Cheatier) return;
 
                 try
                 {
@@ -93,13 +116,7 @@ namespace SRPlugin.Features.Cheatier
                             Player player = TurnDirector.ActivePlayer;
                             if (player != null)
                             {
-#if !SRR
-                                StatsUtil.SetAttribute(player, global::isogame.Attribute.Attribute_Max_HP, player.baseAttributes.hp + 50);
-#else
-                                int baseHP = StatsUtil.GetAttribute(player, isogame.Attribute.Attribute_HP, true);
-                                baseHP += 50;
-                                StatsUtil.SetAttribute(player, isogame.Attribute.Attribute_HP, baseHP);
-#endif
+                                player.baseAttributes.hp += 50;
                                 RunManager.Instance.DirectAddHP(50, null);
                                 Logger.Log(LogChannel.CONSOLE_DESIGNER, LogLevel.Info, "HPMax add 50 (bigger and tougher) ");
                                 LazySingletonBehavior<Analyzer>.Instance.CountCheat(1);

@@ -1,57 +1,98 @@
 ﻿using HarmonyLib;
-using SRPlugin;
+using System.Collections.Generic;
 
 namespace SRPlugin.Features.OverrideStartingKarma
 {
-    [FeatureClass(FeatureEnum.EnableOverrideStartingKarma)]
-    internal class OverrideStartingKarmaFeature : IFeature
+    internal class OverrideStartingKarmaFeature : FeatureImpl
     {
-        public static int? ORIGINAL_STARTING_KARMA_POINTS = null;
+        private static ConfigItem<bool> CIEnableOverrideStartingKarma;
+        private static ConfigItem<int> CIOverrideStartingKarma;
 
-        public static void ResetStartingKarmaPoints()
-        {
-            if (ORIGINAL_STARTING_KARMA_POINTS.HasValue && ORIGINAL_STARTING_KARMA_POINTS.Value != Constants.STARTING_KARMA_POINTS)
+        public OverrideStartingKarmaFeature()
+            : base(new List<ConfigItemBase>()
             {
-                Constants.STARTING_KARMA_POINTS = ORIGINAL_STARTING_KARMA_POINTS.Value;
-            }
-        }
-
-        public static void ApplyStartingKarmaPointsOverride()
+                (CIEnableOverrideStartingKarma = new ConfigItem<bool>(FEATURES_SECTION, nameof(EnableOverrideStartingKarma), true, "setting to false prevents patching")),
+                (CIOverrideStartingKarma = new ConfigItem<int>(FEATURES_SECTION, nameof(OverrideStartingKarma), 60, "game default is 5; -1 also disables even with the feature enabled, but still patched"))
+            })
         {
-            if (FeatureConfig.EnableOverrideStartingKarma && FeatureConfig.OverrideStartingKarma >= 0)
-            {
-                ORIGINAL_STARTING_KARMA_POINTS = ORIGINAL_STARTING_KARMA_POINTS ?? Constants.STARTING_KARMA_POINTS;
-                Constants.STARTING_KARMA_POINTS = FeatureConfig.OverrideStartingKarma;
-            }
+
         }
 
-        public void ApplyPatches()
+        public override void HandleEnabled()
         {
-            SRPlugin.Harmony.PatchAll(typeof(MainMenuScenePrefixPatch));
+            SRPlugin.Harmony.PatchAll(typeof(ConstantsPatch));
         }
 
-        public void UnapplyPatches()
+        public override void HandleDisabled()
         {
             SRPlugin.Harmony.Unpatch(
-                typeof(MainMenuScene).GetMethod(nameof(MainMenuScene.ShowNewGameScreen)),
-                typeof(MainMenuScenePrefixPatch).GetMethod(nameof(MainMenuScenePrefixPatch.ShowNewGameScreen_Prefix))
+                typeof(Constants).GetMethod(nameof(Constants.LoadDefaults)),
+                typeof(ConstantsPatch).GetMethod(nameof(ConstantsPatch.LoadDefaultsPostfix))
                 );
+
+            ResetStartingValues();
         }
 
-        [HarmonyPatch(typeof(MainMenuScene))]
-        internal class MainMenuScenePrefixPatch
+        public static int OverrideStartingKarma
         {
-
-            [HarmonyPrefix]
-            [HarmonyPriority(Priority.HigherThanNormal)]
-            [HarmonyPatch(nameof(MainMenuScene.ShowNewGameScreen))]
-            public static void ShowNewGameScreen_Prefix()
+            get
             {
-                // only resets if changed
-                ResetStartingKarmaPoints();
+                return CIOverrideStartingKarma.GetValue();
+            }
 
+            set
+            {
+                CIOverrideStartingKarma.SetValue(value);
+            }
+        }
+
+        public static bool EnableOverrideStartingKarma
+        {
+            get
+            {
+                return CIEnableOverrideStartingKarma.GetValue();
+            }
+
+            set
+            {
+                CIEnableOverrideStartingKarma.SetValue(value);
+            }
+        }
+
+        private static int? ORIGINAL_STARTING_KARMA_POINTS = null;
+
+        public static void ResetStartingValues()
+        {
+            if (ORIGINAL_STARTING_KARMA_POINTS.HasValue)
+            {
+                Constants.STARTING_KARMA_POINTS = ORIGINAL_STARTING_KARMA_POINTS.Value;
+                ORIGINAL_STARTING_KARMA_POINTS = null;
+            }
+        }
+
+        public static void ApplyOverrideValues()
+        {
+            if (!EnableOverrideStartingKarma) return;
+
+            if (OverrideStartingKarma >= 0)
+            {
+                if (!ORIGINAL_STARTING_KARMA_POINTS.HasValue)
+                {
+                    ORIGINAL_STARTING_KARMA_POINTS = Constants.STARTING_KARMA_POINTS;
+                }
+                Constants.STARTING_KARMA_POINTS = OverrideStartingKarma;
+            }
+        }
+
+        [HarmonyPatch(typeof(Constants))]
+        internal class ConstantsPatch
+        {
+            [HarmonyPostfix]
+            [HarmonyPatch(nameof(Constants.LoadDefaults))]
+            public static void LoadDefaultsPostfix()
+            {
                 // only applies if allowed
-                ApplyStartingKarmaPointsOverride();
+                ApplyOverrideValues();
             }
         }
     }

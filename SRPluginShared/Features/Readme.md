@@ -17,3 +17,5 @@ At which point I realized I could *probably* make all of these things toggleable
 
 So having cheat buttons that grant the current player some bigger points is no big deal. It's a little weirder arbitrarily drawing myself below the normal cheat bar.
 
+##
+I keep playing with the "Features" thing. I'm goofing around with refactoring as I want to get to the point where you just create a new Feature implementation and you're good to go.

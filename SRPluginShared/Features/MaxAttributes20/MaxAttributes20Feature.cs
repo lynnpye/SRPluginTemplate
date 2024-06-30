@@ -1,29 +1,31 @@
 ﻿using HarmonyLib;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SRPlugin.Features.MaxAttributes20
 {
-    [FeatureClass(FeatureEnum.MaxAttributes20)]
-    internal class MaxAttributes20Feature : IFeature
+    internal class MaxAttributes20Feature : FeatureImpl
     {
+        private static ConfigItem<bool> CIMaxAttributes20;
 #if NARROWKARMABUTTONS
-        public static float? ORIGINAL_BLOCK_WIDTH = null;
-        public static float? ORIGINAL_BLOCK_HALF_WIDTH = null;
-
-        public static float NARROW_BLOCK_WIDTH = 40f;
-
-        public static float SCALE_MULTIPLIER
-        {
-            get
-            {
-                if (!FeatureConfig.MaxAttributes20 || !FeatureConfig.NarrowKarmaButtons) return 1f;
-
-                return NARROW_BLOCK_WIDTH / (ORIGINAL_BLOCK_WIDTH ?? KarmaBlock.BLOCK_WIDTH);
-            }
-        }
+        private static ConfigItem<bool> CINarrowKarmaButton;
+        private static ConfigItem<bool> CISimulatedClickLastPossible;
 #endif
 
-        public void UnapplyPatches()
+        public MaxAttributes20Feature()
+            : base(new List<ConfigItemBase>()
+            {
+                (CIMaxAttributes20 = new ConfigItem<bool>(FEATURES_SECTION, nameof(MaxAttributes20), true, "20 fits nicely, you should see my fix for DF lol")),
+#if NARROWKARMABUTTONS
+                (CINarrowKarmaButton = new ConfigItem<bool>(FEATURES_SECTION, nameof(NarrowKarmaButtons), true, "narrows the karma UI to fit a max value of 20")),
+                (CISimulatedClickLastPossible = new ConfigItem<bool>(FEATURES_SECTION, nameof(SimulatedClickLastPossible), true, "clicking the last value in a karma row simulates clicking the last available, simulates SRHK functionality"))
+#endif
+            })
+        {
+
+        }
+
+        public override void HandleDisabled()
         {
             SRPlugin.Harmony.Unpatch(
                 typeof(StatsUtil).GetMethod(nameof(StatsUtil.IsNewEtiquetteLevel)),
@@ -69,13 +71,72 @@ namespace SRPlugin.Features.MaxAttributes20
 #endif
         }
 
-        public void ApplyPatches()
+        public override void HandleEnabled()
         {
             SRPlugin.Harmony.PatchAll(typeof(StatsUtilGetAttributeMaxPatch));
 #if NARROWKARMABUTTONS
             SRPlugin.Harmony.PatchAll(typeof(KarmaEntry2SimulatedClickLastPossiblePatch));
 #endif
         }
+
+
+        public static bool MaxAttributes20
+        {
+            get
+            {
+                return CIMaxAttributes20.GetValue();
+            }
+
+            set
+            {
+                CIMaxAttributes20.SetValue(value);
+            }
+        }
+
+#if NARROWKARMABUTTONS
+        public static bool NarrowKarmaButtons
+        {
+            get
+            {
+                return CINarrowKarmaButton.GetValue();
+            }
+
+            set
+            {
+                CINarrowKarmaButton.SetValue(value);
+            }
+        }
+
+        public static bool SimulatedClickLastPossible
+        {
+            get
+            {
+                return CISimulatedClickLastPossible.GetValue();
+            }
+
+            set
+            {
+                CISimulatedClickLastPossible.SetValue(value);
+            }
+        }
+#endif
+
+#if NARROWKARMABUTTONS
+        public static float? ORIGINAL_BLOCK_WIDTH = null;
+        public static float? ORIGINAL_BLOCK_HALF_WIDTH = null;
+
+        public static float NARROW_BLOCK_WIDTH = 40f;
+
+        public static float SCALE_MULTIPLIER
+        {
+            get
+            {
+                if (!MaxAttributes20 || !NarrowKarmaButtons) return 1f;
+
+                return NARROW_BLOCK_WIDTH / (ORIGINAL_BLOCK_WIDTH ?? KarmaBlock.BLOCK_WIDTH);
+            }
+        }
+#endif
 
         /*
          * This patch is provided as a proof of concept so you can easily see that the plugin, once built and installed, works.
@@ -97,7 +158,7 @@ namespace SRPlugin.Features.MaxAttributes20
             [HarmonyPatch(nameof(StatsUtil.GetAttributeMax))]
             public static void GetAttributeMax_Postfix(ref int __result, isogame.Attribute entry)
             {
-                if (!FeatureConfig.MaxAttributes20) return;
+                if (!MaxAttributes20) return;
 
                 switch (entry)
                 {
@@ -131,7 +192,7 @@ namespace SRPlugin.Features.MaxAttributes20
             [HarmonyPatch(nameof(StatsUtil.GetAttributeMax_Dwarf))]
             public static void GetAttributeMax_Dwarf_Postfix(ref int __result, isogame.Attribute entry)
             {
-                if (!FeatureConfig.MaxAttributes20) return;
+                if (!MaxAttributes20) return;
 
                 GetAttributeMax_Racial(ref __result, entry);
             }
@@ -140,7 +201,7 @@ namespace SRPlugin.Features.MaxAttributes20
             [HarmonyPatch(nameof(StatsUtil.GetAttributeMax_Elf))]
             public static void GetAttributeMax_Elf_Postfix(ref int __result, isogame.Attribute entry)
             {
-                if (!FeatureConfig.MaxAttributes20) return;
+                if (!MaxAttributes20) return;
 
                 GetAttributeMax_Racial(ref __result, entry);
             }
@@ -149,7 +210,7 @@ namespace SRPlugin.Features.MaxAttributes20
             [HarmonyPatch(nameof(StatsUtil.GetAttributeMax_Human))]
             public static void GetAttributeMax_Human_Postfix(ref int __result, isogame.Attribute entry)
             {
-                if (!FeatureConfig.MaxAttributes20) return;
+                if (!MaxAttributes20) return;
 
                 GetAttributeMax_Racial(ref __result, entry);
             }
@@ -158,7 +219,7 @@ namespace SRPlugin.Features.MaxAttributes20
             [HarmonyPatch(nameof(StatsUtil.GetAttributeMax_Ork))]
             public static void GetAttributeMax_Ork_Postfix(ref int __result, isogame.Attribute entry)
             {
-                if (!FeatureConfig.MaxAttributes20) return;
+                if (!MaxAttributes20) return;
 
                 GetAttributeMax_Racial(ref __result, entry);
             }
@@ -167,7 +228,7 @@ namespace SRPlugin.Features.MaxAttributes20
             [HarmonyPatch(nameof(StatsUtil.GetAttributeMax_Troll))]
             public static void GetAttributeMax_Troll_Postfix(ref int __result, isogame.Attribute entry)
             {
-                if (!FeatureConfig.MaxAttributes20) return;
+                if (!MaxAttributes20) return;
 
                 GetAttributeMax_Racial(ref __result, entry);
             }
@@ -182,7 +243,7 @@ namespace SRPlugin.Features.MaxAttributes20
             [HarmonyPatch(nameof(KarmaEntry2.OnBlockClick))]
             public static bool OnBlockClickPrefix(KarmaEntry2 __instance, ref KarmaBlock block, string button)
             {
-                if (!FeatureConfig.MaxAttributes20 || !FeatureConfig.SimulatedClickLastPossible) return true;
+                if (!MaxAttributes20 || !SimulatedClickLastPossible) return true;
 
                 BetterList<KarmaBlock> blockList = PrivateFieldAccessor.GetPrivateFieldValue<BetterList<KarmaBlock>>(__instance, "blockList", null);
                 if (blockList == null)
@@ -192,7 +253,7 @@ namespace SRPlugin.Features.MaxAttributes20
                 }
 
                 KarmaScreen2 parentKarmaScreen = PrivateFieldAccessor.GetPrivateFieldValue<KarmaScreen2>(__instance, "parentKarmaScreen", null);
-                if (!FeatureConfig.SimulatedClickLastPossible || button != "button" || parentKarmaScreen == null || block.index + 1 < blockList.size)
+                if (!SimulatedClickLastPossible || button != "button" || parentKarmaScreen == null || block.index + 1 < blockList.size)
                 {
                     // disabled, do nothing and let normal code run
                     return true;
@@ -214,7 +275,7 @@ namespace SRPlugin.Features.MaxAttributes20
             [HarmonyPatch(nameof(KarmaEntry2.Refresh))]
             public static void RefreshPostfix(KarmaEntry2 __instance)
             {
-                if (!FeatureConfig.MaxAttributes20 || !FeatureConfig.SimulatedClickLastPossible) return;
+                if (!MaxAttributes20 || !SimulatedClickLastPossible) return;
 
                 BetterList<KarmaBlock> blockList = PrivateFieldAccessor.GetPrivateFieldValue<BetterList<KarmaBlock>>(__instance, "blockList", null);
                 if (blockList == null || blockList.size < 1)
@@ -233,7 +294,7 @@ namespace SRPlugin.Features.MaxAttributes20
             [HarmonyPatch(nameof(KarmaEntry2.Initialize))]
             public static void Initialize(KarmaEntry2 __instance)
             {
-                if (!FeatureConfig.MaxAttributes20 || !FeatureConfig.NarrowKarmaButtons) return;
+                if (!MaxAttributes20 || !NarrowKarmaButtons) return;
 
                 __instance.transform.localScale = new Vector3(SCALE_MULTIPLIER, 1f, 1f);
             }

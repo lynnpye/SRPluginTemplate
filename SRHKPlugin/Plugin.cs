@@ -7,7 +7,7 @@ namespace SRHKPlugin
     {
         private void Awake()
         {
-            SRPlugin.SRPlugin.Awaken(() => this.Config);
+            SRPlugin.SRPlugin.Awaken(() => this.Config, () => this.Logger);
 
             // If you aren't managing your Harmony patching directly
             // If you plan to just enable all of your patches immediately
