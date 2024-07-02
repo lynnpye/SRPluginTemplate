@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Features\Cheatier\CheatierFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\MaxAttributes20\MaxAttributes20Feature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\NoCostCyberware\NoCostCyberwareFeature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\NoUnspentKarmaPopup\NoUnspentKarmaPopupFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\OverrideStartingKarma\OverrideStartingKarmaFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\ReduceSpiritEscape\ReduceSpiritEscapeFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PrivateFieldAccessor.cs" />
