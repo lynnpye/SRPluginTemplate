@@ -91,15 +91,29 @@ namespace SRPlugin
         public static string FEATURES_SECTION = "Features";
 
         private List<ConfigItemBase> configItems;
+        // only used if there is no enabling flag as the first config item
+        private bool _localOnlyIsEnabled;
 
         public FeatureImpl(Func<List<ConfigItemBase>> configItemsFunc)
         {
             this.configItems = configItemsFunc();
+
+            _Init();
         }
 
         public FeatureImpl(List<ConfigItemBase> configItems)
         {
             this.configItems = configItems;
+
+            _Init();
+        }
+
+        private void _Init()
+        {
+            if (configItems == null || configItems.Count == 0)
+            {
+                _localOnlyIsEnabled = true;
+            }
         }
 
         public void Bind()
@@ -119,7 +133,7 @@ namespace SRPlugin
         {
             if (configItems == null || configItems.Count == 0)
             {
-                return false;
+                return _localOnlyIsEnabled;
             }
             ConfigItem<bool> firstConfigItem = configItems[0] as ConfigItem<bool>;
             return (firstConfigItem != null && firstConfigItem.GetValue());
@@ -127,10 +141,17 @@ namespace SRPlugin
 
         public void SetEnabled(bool enabled)
         {
-            ConfigItem<bool> firstConfigItem = configItems[0] as ConfigItem<bool>;
-            if (firstConfigItem != null)
+            if (configItems == null || configItems.Count == 0)
             {
-                firstConfigItem.SetValue(enabled);
+                _localOnlyIsEnabled = enabled;
+            }
+            else
+            {
+                ConfigItem<bool> firstConfigItem = configItems[0] as ConfigItem<bool>;
+                if (firstConfigItem != null)
+                {
+                    firstConfigItem.SetValue(enabled);
+                }
             }
 
             if (IsEnabled())
