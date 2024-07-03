@@ -104,6 +104,7 @@ namespace SRPlugin
 
         public void Bind()
         {
+            if (configItems == null) return;
             foreach (var configItem in configItems)
             {
                 configItem.Bind();
