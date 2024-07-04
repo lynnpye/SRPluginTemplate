@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace SRPlugin
 {
-    public class PrivateFieldAccessor
+    public class PrivateEye
     {
         public static void SetPrivateFieldValue(object obj, string fieldName, object value)
         {
@@ -33,6 +33,28 @@ namespace SRPlugin
                 return defaultValue;
             }
             return (T)fieldValue;
+        }
+
+        public static T GetPrivateGetterValue<T>(object obj, string propertyName, T defaultValue)
+        {
+            Type type = obj.GetType();
+
+            PropertyInfo propertyInfo = type.GetProperty(propertyName, BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (propertyInfo == null)
+            {
+                throw new ArgumentException($"Property '{propertyName}' not found on type '{type.FullName}'.");
+            }
+
+            MethodInfo getMethod = propertyInfo.GetGetMethod(true);
+
+            if (getMethod == null)
+            {
+                throw new InvalidOperationException($"Property '{propertyName}' does not have a getter.");
+            }
+
+            // Invoke the getter method on the object
+            return (T)getMethod.Invoke(obj, null);
         }
     }
 }

@@ -91,19 +91,22 @@ namespace SRPlugin
         public static string FEATURES_SECTION = "Features";
 
         private List<ConfigItemBase> configItems;
+        private List<PatchRecord> patchRecords;
         // only used if there is no enabling flag as the first config item
         private bool _localOnlyIsEnabled;
 
-        public FeatureImpl(Func<List<ConfigItemBase>> configItemsFunc)
+        public FeatureImpl(Func<List<ConfigItemBase>> configItemsFunc, List<PatchRecord> patchRecords)
         {
             this.configItems = configItemsFunc();
+            this.patchRecords = patchRecords;
 
             _Init();
         }
 
-        public FeatureImpl(List<ConfigItemBase> configItems)
+        public FeatureImpl(List<ConfigItemBase> configItems, List<PatchRecord> patchRecords)
         {
             this.configItems = configItems;
+            this.patchRecords = patchRecords;
 
             _Init();
         }
@@ -116,6 +119,12 @@ namespace SRPlugin
             }
         }
 
+        public void Initialize()
+        {
+            Bind();
+            SyncToEnabledState();
+        }
+
         public void Bind()
         {
             if (configItems == null) return;
@@ -125,9 +134,31 @@ namespace SRPlugin
             }
         }
 
-        public abstract void HandleEnabled();
+        public virtual void HandleEnabled()
+        {
 
-        public abstract void HandleDisabled();
+        }
+
+        public virtual void HandleDisabled()
+        {
+
+        }
+
+        public virtual void ApplyPatches()
+        {
+            foreach(var patchRecord in patchRecords)
+            {
+                patchRecord.Patch();
+            }
+        }
+
+        public virtual void UnapplyPatches()
+        {
+            foreach(var patchRecord in patchRecords)
+            {
+                patchRecord.Unpatch();
+            }
+        }
 
         public bool IsEnabled()
         {
@@ -154,12 +185,19 @@ namespace SRPlugin
                 }
             }
 
+            SyncToEnabledState();
+        }
+
+        public void SyncToEnabledState()
+        {
             if (IsEnabled())
             {
                 HandleEnabled();
+                ApplyPatches();
             }
             else
             {
+                UnapplyPatches();
                 HandleDisabled();
             }
         }

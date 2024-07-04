@@ -17,7 +17,7 @@ namespace DFDCPlugin
             //      HarmonyInst.PatchAll();
             // or something like:
             //      var assembly = Assembly.GetExecutingAssembly();
-            //      HarmonyInst.PatachAll(assembly);
+            //      HarmonyInst.PatchAll(assembly);
             // either of those will search your .dll for properly annotated classes
             // and apply their patches.
 

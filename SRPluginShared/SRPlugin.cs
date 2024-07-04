@@ -3,6 +3,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 
 namespace SRPlugin
@@ -10,12 +11,25 @@ namespace SRPlugin
     public delegate ConfigFile GetConfigFileDelegate();
     public delegate ManualLogSource GetLoggerDelegate();
 
-    public class SRPlugin
+    public static class SRPlugin
     {
         public static string HarmonyID { get; private set; }
         public static Harmony Harmony { get; private set; }
         private static GetConfigFileDelegate GetConfigFile;
         private static GetLoggerDelegate GetLogger;
+        private static string _assemblyPath;
+
+        public static string AssemblyPath
+        {
+            get
+            {
+                if (_assemblyPath == null)
+                {
+                    _assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                }
+                return _assemblyPath;
+            }
+        }
 
         public static ConfigFile ConfigFile
         {
@@ -41,8 +55,7 @@ namespace SRPlugin
             HarmonyID = $"{Guid.NewGuid().ToString()}";
             Harmony = new Harmony(HarmonyID);
 
-            Bind();
-            ApplyEnabledPatches();
+            InitializeFeatures();
 
             // If you aren't managing your Harmony patching directly
             // If you plan to just enable all of your patches immediately
@@ -51,14 +64,22 @@ namespace SRPlugin
             //      HarmonyInst.PatchAll();
             // or something like:
             //      var assembly = Assembly.GetExecutingAssembly();
-            //      HarmonyInst.PatachAll(assembly);
+            //      HarmonyInst.PatchAll(assembly);
             // either of those will search your .dll for properly annotated classes
             // and apply their patches.
         }
 
+        public static void InitializeFeatures()
+        {
+            foreach (var f in FeatureImpls)
+            {
+                f.Initialize();
+            }
+        }
+
         private static List<FeatureImpl> featureImpls = new List<FeatureImpl>();
 
-        public static List<FeatureImpl> FeatureImpls
+        private static List<FeatureImpl> FeatureImpls
         {
             get
             {
@@ -92,25 +113,6 @@ namespace SRPlugin
             catch (ReflectionTypeLoadException ex)
             {
                 Console.WriteLine($"Error finding Feature implementations in assembly '{assembly.FullName}': {ex.Message}");
-            }
-        }
-
-        public static void Bind()
-        {
-            foreach (var f in FeatureImpls)
-            {
-                f.Bind();
-            }
-        }
-
-        public static void ApplyEnabledPatches()
-        {
-            foreach (var f in FeatureImpls)
-            {
-                if (f.IsEnabled())
-                {
-                    f.HandleEnabled();
-                }
             }
         }
     }

@@ -13,75 +13,54 @@ namespace SRPlugin.Features.Cheatier
             : base(new List<ConfigItemBase>()
             {
                 (CICheatier = new ConfigItem<bool>(FEATURES_SECTION, nameof(Cheatier), true, "adds a new, cheatier, cheat bar"))
+            }, new List<PatchRecord>()
+            {
+                PatchRecord.Prefix(
+                    //typeof(DebugConsole).GetMethod("DrawCheatBar"),
+                    AccessTools.Method(typeof(DebugConsole), "DrawCheatBar"),
+                    typeof(DebugConsolePatch).GetMethod(nameof(DebugConsolePatch.DrawCheatBarPrefix))
+                    ),
+                PatchRecord.Reverse(
+                    //typeof(DebugConsole).GetMethod("AfterDebugInput"),
+                    AccessTools.Method(typeof(DebugConsole), "AfterDebugInput"),
+                    typeof(DebugConsolePatch).GetMethod(nameof(DebugConsolePatch.AfterDebugInputReversePatch))
+                    ),
             })
         {
-
         }
 
-        public override void HandleDisabled()
-        {
-            SRPlugin.Harmony.Unpatch(
-                typeof(DebugConsole).GetMethod("DrawCheatBar"),
-                typeof(DebugConsolePatch).GetMethod(nameof(DebugConsolePatch.DrawCheatBarPrefix))
-                );
-
-            SRPlugin.Harmony.Unpatch(
-                typeof(DebugConsole).GetMethod("AfterDebugInput"),
-                typeof(DebugConsolePatch).GetMethod(nameof(DebugConsolePatch.AfterDebugInput))
-                );
-        }
-
-        public override void HandleEnabled()
-        {
-            SRPlugin.Harmony.PatchAll(typeof(DebugConsolePatch));
-        }
-
-        public static bool Cheatier
-        {
-            get
-            {
-                return CICheatier.GetValue();
-            }
-
-            set
-            {
-                CICheatier.SetValue(value);
-            }
-        }
+        public static bool Cheatier { get => CICheatier.GetValue(); set => CICheatier.SetValue(value); }
 
         [HarmonyPatch(typeof(DebugConsole))]
         internal class DebugConsolePatch
         {
             [HarmonyReversePatch]
             [HarmonyPatch(typeof(DebugConsole), "AfterDebugInput")]
-            public static void AfterDebugInput(object instance) =>
+            public static void AfterDebugInputReversePatch(object instance) =>
                 // its a stub so it has no initial content
                 throw new NotImplementedException("It's a stub");
 
             [HarmonyPostfix]
             [HarmonyPatch("DrawCheatBar")]
-            public static void DrawCheatBarPrefix(DebugConsole __instance)
+            public static void DrawCheatBarPrefix(DebugConsole __instance, float ___butHeight, bool ___showCheats)
             {
                 if (!Cheatier) return;
 
                 try
                 {
-                    float butHeight = PrivateFieldAccessor.GetPrivateFieldValue<float>(__instance, "butHeight", 28f);
-                    bool showCheats = PrivateFieldAccessor.GetPrivateFieldValue<bool>(__instance, "showCheats", false);
-
                     float num = (float)Screen.width * 0.75f;
                     float left = (float)Screen.width - num - 10f;
-                    float top = 200f + 3.6f * butHeight;
-                    GUILayout.BeginArea(new Rect(left, top, num, butHeight * 3.2f));
+                    float top = 200f + 3.6f * ___butHeight;
+                    GUILayout.BeginArea(new Rect(left, top, num, ___butHeight * 3.2f));
                     GUILayout.BeginVertical(new GUILayoutOption[0]);
                     GUILayout.BeginHorizontal(new GUILayoutOption[0]);
                     GUILayout.FlexibleSpace();
-                    if (showCheats && RunManager.HasInstance())
+                    if (___showCheats && RunManager.HasInstance())
                     {
                         if (GUILayout.Button("+1APMax", new GUILayoutOption[]
                         {
                         GUILayout.ExpandWidth(false),
-                        GUILayout.Height(butHeight)
+                        GUILayout.Height(___butHeight)
                         }))
                         {
                             Player player = TurnDirector.ActivePlayer;
@@ -98,7 +77,7 @@ namespace SRPlugin.Features.Cheatier
                         if (GUILayout.Button("+100AP", new GUILayoutOption[]
                         {
                         GUILayout.ExpandWidth(false),
-                        GUILayout.Height(butHeight)
+                        GUILayout.Height(___butHeight)
                         }))
                         {
                             RunManager.Instance.DirectAddAP(100, null);
@@ -110,7 +89,7 @@ namespace SRPlugin.Features.Cheatier
                         if (GUILayout.Button("+50HPMax", new GUILayoutOption[]
                         {
                         GUILayout.ExpandWidth(false),
-                        GUILayout.Height(butHeight)
+                        GUILayout.Height(___butHeight)
                         }))
                         {
                             Player player = TurnDirector.ActivePlayer;
@@ -127,11 +106,11 @@ namespace SRPlugin.Features.Cheatier
                         if (GUILayout.Button("+500HP", new GUILayoutOption[]
                         {
                         GUILayout.ExpandWidth(false),
-                        GUILayout.Height(butHeight)
+                        GUILayout.Height(___butHeight)
                         }))
                         {
                             RunManager.Instance.DirectAddHP(500, null);
-                            Logger.Log(LogChannel.CONSOLE_DESIGNER, LogLevel.Info, "HP add 500 (once more, with feeling this time) ");
+                            Logger.Log(LogChannel.CONSOLE_DESIGNER, LogLevel.Info, "HP add 500 (once more, with feeling) ");
                             LazySingletonBehavior<Analyzer>.Instance.CountCheat(1);
                             LazySingletonBehavior<InputManager>.Instance.ConsumeFrame();
                         }
@@ -139,11 +118,11 @@ namespace SRPlugin.Features.Cheatier
                         if (GUILayout.Button("+1K", new GUILayoutOption[]
                         {
                         GUILayout.ExpandWidth(false),
-                        GUILayout.Height(butHeight)
+                        GUILayout.Height(___butHeight)
                         }))
                         {
                             RunManager.Instance.DirectAddKarma(1000);
-                            Logger.Log(LogChannel.CONSOLE_DESIGNER, LogLevel.Info, "Karma add 1000 ()");
+                            Logger.Log(LogChannel.CONSOLE_DESIGNER, LogLevel.Info, "Karma add 1000 (it was very effective)");
                             LazySingletonBehavior<Analyzer>.Instance.CountCheat(1);
                             LazySingletonBehavior<InputManager>.Instance.ConsumeFrame();
                         }
@@ -151,7 +130,7 @@ namespace SRPlugin.Features.Cheatier
                         if (GUILayout.Button("+100k" + Constants.YEN_SIGN, new GUILayoutOption[]
                         {
                         GUILayout.ExpandWidth(false),
-                        GUILayout.Height(butHeight)
+                        GUILayout.Height(___butHeight)
                         }))
                         {
                             RunManager.Instance.DirectAddNuyen(100000);
@@ -162,28 +141,28 @@ namespace SRPlugin.Features.Cheatier
                     }
 #if !SRR
                     bool flag = LazySingletonBehavior<Analyzer>.HasInstance() && LazySingletonBehavior<Analyzer>.Instance.CurrentGameCheated();
-                    string text4 = ((!showCheats) ? "< Cheatier" : "> Cheatier");
+                    string text4 = ((!___showCheats) ? "< Cheatier" : "> Cheatier");
                     if (GUILayout.Button(text4, (!flag) ? __instance.styleTwo : __instance.styleOne,
                         new GUILayoutOption[]
                         {
                             GUILayout.Width(88f),
-                            GUILayout.Height(butHeight)
+                            GUILayout.Height(___butHeight)
                         }
                        ))
                     {
                         __instance.ToggleCheats();
-                        AfterDebugInput(__instance);
+                        AfterDebugInputReversePatch(__instance);
                     }
 #else
-                    string text5 = ((!showCheats) ? "< Cheatier" : "> Cheatier");
+                    string text5 = ((!___showCheats) ? "< Cheatier" : "> Cheatier");
                     if (GUILayout.Button(text5, new GUILayoutOption[]
                     {
                         GUILayout.Width(88f),
-                        GUILayout.Height(butHeight)
+                        GUILayout.Height(___butHeight)
                     }))
                     {
                         __instance.ToggleCheats();
-                        AfterDebugInput(__instance);
+                        AfterDebugInputReversePatch(__instance);
                     }
 #endif
                     GUILayout.EndHorizontal();
@@ -192,7 +171,7 @@ namespace SRPlugin.Features.Cheatier
                 }
                 catch (Exception e)
                 {
-                    FileLog.Log(e.Message);
+                    SRPlugin.Logger.LogInfo($"Exception while drawing Cheatier cheat bar:\n{e}");
                 }
             }
         }

@@ -20,105 +20,60 @@ namespace SRPlugin.Features.MaxAttributes20
                 (CINarrowKarmaButton = new ConfigItem<bool>(FEATURES_SECTION, nameof(NarrowKarmaButtons), true, "narrows the karma UI to fit a max value of 20")),
                 (CISimulatedClickLastPossible = new ConfigItem<bool>(FEATURES_SECTION, nameof(SimulatedClickLastPossible), true, "clicking the last value in a karma row simulates clicking the last available, simulates SRHK functionality"))
 #endif
+            }, new List<PatchRecord>()
+            {
+                PatchRecord.Postfix(
+                    typeof(StatsUtil).GetMethod(nameof(StatsUtil.IsNewEtiquetteLevel)),
+                    typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.IsNewEtiquetteLevelPostfix))
+                    ),
+                PatchRecord.Postfix(
+                    typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax)),
+                    typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Postfix))
+                    ),
+                PatchRecord.Postfix(
+                    typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Dwarf)),
+                    typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Dwarf_Postfix))
+                    ),
+                PatchRecord.Postfix(
+                    typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Elf)),
+                    typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Elf_Postfix))
+                    ),
+                PatchRecord.Postfix(
+                    typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Human)),
+                    typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Human_Postfix))
+                    ),
+                PatchRecord.Postfix(
+                    typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Ork)),
+                    typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Ork_Postfix))
+                    ),
+                PatchRecord.Postfix(
+                    typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Troll)),
+                    typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Troll_Postfix))
+                    ),
+#if NARROWKARMABUTTONS
+                PatchRecord.Prefix(
+                    typeof(KarmaEntry2).GetMethod(nameof(KarmaEntry2.OnBlockClick)),
+                    typeof(KarmaEntry2SimulatedClickLastPossiblePatch).GetMethod(nameof(KarmaEntry2SimulatedClickLastPossiblePatch.OnBlockClickPrefix))
+                    ),
+                PatchRecord.Postfix(
+                    typeof(KarmaEntry2).GetMethod(nameof(KarmaEntry2.Refresh)),
+                    typeof(KarmaEntry2SimulatedClickLastPossiblePatch).GetMethod(nameof(KarmaEntry2SimulatedClickLastPossiblePatch.RefreshPostfix))
+                    ),
+                PatchRecord.Postfix(
+                    typeof(KarmaEntry2).GetMethod(nameof(KarmaEntry2.Initialize)),
+                    typeof(KarmaEntry2SimulatedClickLastPossiblePatch).GetMethod(nameof(KarmaEntry2SimulatedClickLastPossiblePatch.InitializePostfix))
+                    ),
+#endif
             })
         {
 
         }
 
-        public override void HandleDisabled()
-        {
-            SRPlugin.Harmony.Unpatch(
-                typeof(StatsUtil).GetMethod(nameof(StatsUtil.IsNewEtiquetteLevel)),
-                typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.IsNewEtiquetteLevelPostfix))
-                );
-            SRPlugin.Harmony.Unpatch(
-                typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax)),
-                typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Postfix))
-                );
-            SRPlugin.Harmony.Unpatch(
-                typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Dwarf)),
-                typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Dwarf_Postfix))
-                );
-            SRPlugin.Harmony.Unpatch(
-                typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Elf)),
-                typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Elf_Postfix))
-                );
-            SRPlugin.Harmony.Unpatch(
-                typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Human)),
-                typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Human_Postfix))
-                );
-            SRPlugin.Harmony.Unpatch(
-                typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Ork)),
-                typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Ork_Postfix))
-                );
-            SRPlugin.Harmony.Unpatch(
-                typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Troll)),
-                typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Troll_Postfix))
-                );
+
+        public static bool MaxAttributes20 { get => CIMaxAttributes20.GetValue(); set => CIMaxAttributes20.SetValue(value); }
 #if NARROWKARMABUTTONS
-            SRPlugin.Harmony.Unpatch(
-                typeof(KarmaEntry2).GetMethod(nameof(KarmaEntry2.OnBlockClick)),
-                typeof(KarmaEntry2SimulatedClickLastPossiblePatch).GetMethod(nameof(KarmaEntry2SimulatedClickLastPossiblePatch.OnBlockClickPrefix))
-                );
-            SRPlugin.Harmony.Unpatch(
-                typeof(KarmaEntry2).GetMethod(nameof(KarmaEntry2.Refresh)),
-                typeof(KarmaEntry2SimulatedClickLastPossiblePatch).GetMethod(nameof(KarmaEntry2SimulatedClickLastPossiblePatch.RefreshPostfix))
-                );
-            SRPlugin.Harmony.Unpatch(
-                typeof(KarmaEntry2).GetMethod(nameof(KarmaEntry2.Initialize)),
-                typeof(KarmaEntry2SimulatedClickLastPossiblePatch).GetMethod(nameof(KarmaEntry2SimulatedClickLastPossiblePatch.Initialize))
-                );
-#endif
-        }
-
-        public override void HandleEnabled()
-        {
-            SRPlugin.Harmony.PatchAll(typeof(StatsUtilGetAttributeMaxPatch));
-#if NARROWKARMABUTTONS
-            SRPlugin.Harmony.PatchAll(typeof(KarmaEntry2SimulatedClickLastPossiblePatch));
-#endif
-        }
-
-
-        public static bool MaxAttributes20
-        {
-            get
-            {
-                return CIMaxAttributes20.GetValue();
-            }
-
-            set
-            {
-                CIMaxAttributes20.SetValue(value);
-            }
-        }
-
-#if NARROWKARMABUTTONS
-        public static bool NarrowKarmaButtons
-        {
-            get
-            {
-                return CINarrowKarmaButton.GetValue();
-            }
-
-            set
-            {
-                CINarrowKarmaButton.SetValue(value);
-            }
-        }
-
-        public static bool SimulatedClickLastPossible
-        {
-            get
-            {
-                return CISimulatedClickLastPossible.GetValue();
-            }
-
-            set
-            {
-                CISimulatedClickLastPossible.SetValue(value);
-            }
-        }
+        public static bool NarrowKarmaButtons { get => CINarrowKarmaButton.GetValue(); set => CINarrowKarmaButton.SetValue(value); }
+        public static bool SimulatedClickLastPossible { get => CISimulatedClickLastPossible.GetValue(); set => CISimulatedClickLastPossible.SetValue(value); }
 #endif
 
 #if NARROWKARMABUTTONS
@@ -245,14 +200,14 @@ namespace SRPlugin.Features.MaxAttributes20
             {
                 if (!MaxAttributes20 || !SimulatedClickLastPossible) return true;
 
-                BetterList<KarmaBlock> blockList = PrivateFieldAccessor.GetPrivateFieldValue<BetterList<KarmaBlock>>(__instance, "blockList", null);
+                BetterList<KarmaBlock> blockList = PrivateEye.GetPrivateFieldValue<BetterList<KarmaBlock>>(__instance, "blockList", null);
                 if (blockList == null)
                 {
                     // not sure what happened but let normal code try to handle it
                     return true;
                 }
 
-                KarmaScreen2 parentKarmaScreen = PrivateFieldAccessor.GetPrivateFieldValue<KarmaScreen2>(__instance, "parentKarmaScreen", null);
+                KarmaScreen2 parentKarmaScreen = PrivateEye.GetPrivateFieldValue<KarmaScreen2>(__instance, "parentKarmaScreen", null);
                 if (!SimulatedClickLastPossible || button != "button" || parentKarmaScreen == null || block.index + 1 < blockList.size)
                 {
                     // disabled, do nothing and let normal code run
@@ -277,7 +232,7 @@ namespace SRPlugin.Features.MaxAttributes20
             {
                 if (!MaxAttributes20 || !SimulatedClickLastPossible) return;
 
-                BetterList<KarmaBlock> blockList = PrivateFieldAccessor.GetPrivateFieldValue<BetterList<KarmaBlock>>(__instance, "blockList", null);
+                BetterList<KarmaBlock> blockList = PrivateEye.GetPrivateFieldValue<BetterList<KarmaBlock>>(__instance, "blockList", null);
                 if (blockList == null || blockList.size < 1)
                 {
                     // not sure what happened but let normal code try to handle it
@@ -292,7 +247,7 @@ namespace SRPlugin.Features.MaxAttributes20
 
             [HarmonyPostfix]
             [HarmonyPatch(nameof(KarmaEntry2.Initialize))]
-            public static void Initialize(KarmaEntry2 __instance)
+            public static void InitializePostfix(KarmaEntry2 __instance)
             {
                 if (!MaxAttributes20 || !NarrowKarmaButtons) return;
 

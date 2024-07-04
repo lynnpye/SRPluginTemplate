@@ -13,42 +13,22 @@ namespace SRPlugin.Features.NoCostCyberware
             : base(new List<ConfigItemBase>()
             {
                 (CINoCostCyberware = new ConfigItem<bool>(FEATURES_SECTION, nameof(NoCostCyberware), true, "overrides the call to GetDerivedEssence... essence-cost-free cyberware!"))
+            }, new List<PatchRecord>()
+            {
+                PatchRecord.Postfix(
+                    typeof(Actor).GetMethod(nameof(Actor.GetDerivedEssence)),
+                    typeof(ActorGetDerivedEssencePatch).GetMethod(nameof(ActorGetDerivedEssencePatch.GetDerivedEssence_Postfix))
+                    ),
+                PatchRecord.Prefix(
+                    typeof(CyberwareScreen).GetMethod(nameof(CyberwareScreen.GetEssenceLostFromItemDef)),
+                    typeof(CyberwareScreenPatch).GetMethod(nameof(CyberwareScreenPatch.GetEssenceLostFromItemDefPrefix))
+                    ),
             })
         {
 
         }
 
-        public override void HandleDisabled()
-        {
-            SRPlugin.Harmony.Unpatch(
-                typeof(Actor).GetMethod(nameof(Actor.GetDerivedEssence)),
-                typeof(ActorGetDerivedEssencePatch).GetMethod(nameof(ActorGetDerivedEssencePatch.GetDerivedEssence_Postfix))
-                );
-            
-            SRPlugin.Harmony.Unpatch(
-                typeof(CyberwareScreen).GetMethod(nameof(CyberwareScreen.GetEssenceLostFromItemDef)),
-                typeof(CyberwareScreenPatch).GetMethod(nameof(CyberwareScreenPatch.GetEssenceLostFromItemDefPrefix))
-                );
-        }
-
-        public override void HandleEnabled()
-        {
-            SRPlugin.Harmony.PatchAll(typeof(ActorGetDerivedEssencePatch));
-            SRPlugin.Harmony.PatchAll(typeof(CyberwareScreenPatch));
-        }
-
-        public static bool NoCostCyberware
-        {
-            get
-            {
-                return CINoCostCyberware.GetValue();
-            }
-
-            set
-            {
-                CINoCostCyberware.SetValue(value);
-            }
-        }
+        public static bool NoCostCyberware { get => CINoCostCyberware.GetValue(); set => CINoCostCyberware.SetValue(value); }
 
         [HarmonyPatch(typeof(Actor))]
         internal class ActorGetDerivedEssencePatch
