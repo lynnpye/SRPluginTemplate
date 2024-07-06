@@ -20,6 +20,11 @@ namespace SRPlugin.Features.AlwaysBeSprinting
 
         }
 
+        public override void HandleDisabled()
+        {
+            ResetStartingValues();
+        }
+
         public static bool AlwaysBeSprinting { get => CIAlwaysBeSprinting.GetValue(); set => CIAlwaysBeSprinting.SetValue(value); }
 
         private static OverrideableValue<int> OVCombatSprint = new OverrideableValue<int>(Constants.MOVE_THRESHOLD_COMBAT_SPRINT, (v) => Constants.MOVE_THRESHOLD_COMBAT_SPRINT = v, 0);

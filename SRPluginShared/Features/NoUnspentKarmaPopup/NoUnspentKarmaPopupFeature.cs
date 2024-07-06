@@ -22,19 +22,6 @@ namespace SRPlugin.Features.NoUnspentKarmaPopup
 
         }
 
-        public override void HandleEnabled()
-        {
-            SRPlugin.Harmony.PatchAll(typeof(UnspentKarmaListenerPatch));
-        }
-
-        public override void HandleDisabled()
-        {
-            SRPlugin.Harmony.Unpatch(
-                typeof(UnspentKarmaListener).GetMethod(nameof(UnspentKarmaListener.CreateUnspentKarmaPopup)),
-                typeof(UnspentKarmaListenerPatch).GetMethod(nameof(UnspentKarmaListenerPatch.CreateUnspentKarmaPopupPatch))
-                );
-        }
-
         public static bool NoUnspentKarmaPopup { get => CINoUnspentKarmaPopup.GetValue(); set => CINoUnspentKarmaPopup.SetValue(value); }
 
         [HarmonyPatch(typeof(UnspentKarmaListener))]
