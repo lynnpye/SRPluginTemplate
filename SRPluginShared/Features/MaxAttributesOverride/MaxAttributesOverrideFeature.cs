@@ -14,14 +14,6 @@ namespace SRPlugin.Features.MaxAttributes20
         private static ConfigItem<bool> CISimulatedClickLastPossible;
 #endif
 
-        // MetahumanMaxes
-        //private static ConfigItem<int> CIMaxMetahumanBOD;
-        //private static ConfigItem<int> CIMaxMetahumanQUI;
-        //private static ConfigItem<int> CIMaxMetahumanSTR;
-        //private static ConfigItem<int> CIMaxMetahumanCHA;
-        //private static ConfigItem<int> CIMaxMetahumanINT;
-        //private static ConfigItem<int> CIMaxMetahumanWIL;
-
         // DwarfMaxes
         private static ConfigItem<int> CIMaxDwarfBOD;
         private static ConfigItem<int> CIMaxDwarfQUI;
@@ -74,13 +66,6 @@ namespace SRPlugin.Features.MaxAttributes20
                 (CISimulatedClickLastPossible = new ConfigItem<bool>(FEATURES_SECTION, nameof(SimulatedClickLastPossible), true, "clicking the last value in a karma row simulates clicking the last available, simulates SRHK functionality")),
                 (CINarrowKarmaButton = new ConfigItem<bool>(FEATURES_SECTION, nameof(NarrowKarmaButtons), true, "narrows the karma UI if any attribute max value is in range [18 , 20], has no effect otherwise (should probably leave true)")),
 #endif
-                // MaxMetahuman
-                //(CIMaxMetahumanBOD = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxMetahumanBOD), 20, "max BOD for Metahumans, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                //(CIMaxMetahumanQUI = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxMetahumanQUI), 20, "max QUI for Metahumans, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                //(CIMaxMetahumanSTR = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxMetahumanSTR), 20, "max STR for Metahumans, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                //(CIMaxMetahumanINT = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxMetahumanINT), 20, "max INT for Metahumans, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                //(CIMaxMetahumanWIL = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxMetahumanWIL), 20, "max WIL for Metahumans, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                //(CIMaxMetahumanCHA = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxMetahumanCHA), 20, "max CHA for Metahumans, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
                 // MaxDwarf
                 (CIMaxDwarfBOD = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxDwarfBOD), 20, "max BOD for Dwarfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
                 (CIMaxDwarfQUI = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxDwarfQUI), 20, "max QUI for Dwarfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
@@ -173,14 +158,6 @@ namespace SRPlugin.Features.MaxAttributes20
         public static bool NarrowKarmaButtons { get => CINarrowKarmaButton.GetValue(); set => CINarrowKarmaButton.SetValue(value); }
         public static bool SimulatedClickLastPossible { get => CISimulatedClickLastPossible.GetValue(); set => CISimulatedClickLastPossible.SetValue(value); }
 #endif
-
-        // Max Metahuman
-        //public static int MaxMetahumanBOD { get => CIMaxMetahumanBOD.GetValue(); set => CIMaxMetahumanBOD.SetValue(value); }
-        //public static int MaxMetahumanQUI { get => CIMaxMetahumanQUI.GetValue(); set => CIMaxMetahumanQUI.SetValue(value); }
-        //public static int MaxMetahumanSTR { get => CIMaxMetahumanSTR.GetValue(); set => CIMaxMetahumanSTR.SetValue(value); }
-        //public static int MaxMetahumanCHA { get => CIMaxMetahumanCHA.GetValue(); set => CIMaxMetahumanCHA.SetValue(value); }
-        //public static int MaxMetahumanINT { get => CIMaxMetahumanINT.GetValue(); set => CIMaxMetahumanINT.SetValue(value); }
-        //public static int MaxMetahumanWIL { get => CIMaxMetahumanWIL.GetValue(); set => CIMaxMetahumanWIL.SetValue(value); }
 
         // Max Dwarf
         public static int MaxDwarfBOD { get => CIMaxDwarfBOD.GetValue(); set => CIMaxDwarfBOD.SetValue(value); }
@@ -288,13 +265,6 @@ namespace SRPlugin.Features.MaxAttributes20
             }
 
             var 
-            //attr = isogame.Attribute.Attribute_Body; VerifyAttribute("Metahuman", attr, MaxMetahumanBOD, 20, v => MaxMetahumanBOD = v);
-            //attr = isogame.Attribute.Attribute_Quickness; VerifyAttribute("Metahuman", attr, MaxMetahumanQUI, 20, v => MaxMetahumanQUI = v);
-            //attr = isogame.Attribute.Attribute_Strength; VerifyAttribute("Metahuman", attr, MaxMetahumanSTR, 20, v => MaxMetahumanSTR = v);
-            //attr = isogame.Attribute.Attribute_Intelligence; VerifyAttribute("Metahuman", attr, MaxMetahumanINT, 20, v => MaxMetahumanINT = v);
-            //attr = isogame.Attribute.Attribute_Willpower; VerifyAttribute("Metahuman", attr, MaxMetahumanWIL, 20, v => MaxMetahumanWIL = v);
-            //attr = isogame.Attribute.Attribute_Charisma; VerifyAttribute("Metahuman", attr, MaxMetahumanCHA, 20, v => MaxMetahumanCHA = v);
-
             attr = isogame.Attribute.Attribute_Body; VerifyAttribute("Dwarf", attr, MaxDwarfBOD, v => MaxDwarfBOD = v);
             attr = isogame.Attribute.Attribute_Quickness; VerifyAttribute("Dwarf", attr, MaxDwarfQUI, v => MaxDwarfQUI = v);
             attr = isogame.Attribute.Attribute_Strength; VerifyAttribute("Dwarf", attr, MaxDwarfSTR, v => MaxDwarfSTR = v);
