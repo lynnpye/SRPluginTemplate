@@ -106,31 +106,31 @@ namespace SRPlugin.Features.MaxAttributes20
             {
                 PatchRecord.Postfix(
                     typeof(StatsUtil).GetMethod(nameof(StatsUtil.IsNewEtiquetteLevel)),
-                    typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.IsNewEtiquetteLevelPostfix))
+                    typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.IsNewEtiquetteLevelPostfix))
                     ),
                 PatchRecord.Postfix(
                     typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax)),
-                    typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Postfix))
+                    typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Postfix))
                     ),
                 PatchRecord.Postfix(
                     typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Dwarf)),
-                    typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Dwarf_Postfix))
+                    typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Dwarf_Postfix))
                     ),
                 PatchRecord.Postfix(
                     typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Elf)),
-                    typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Elf_Postfix))
+                    typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Elf_Postfix))
                     ),
                 PatchRecord.Postfix(
                     typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Human)),
-                    typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Human_Postfix))
+                    typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Human_Postfix))
                     ),
                 PatchRecord.Postfix(
                     typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Ork)),
-                    typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Ork_Postfix))
+                    typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Ork_Postfix))
                     ),
                 PatchRecord.Postfix(
                     typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Troll)),
-                    typeof(StatsUtilGetAttributeMaxPatch).GetMethod(nameof(StatsUtilGetAttributeMaxPatch.GetAttributeMax_Troll_Postfix))
+                    typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Troll_Postfix))
                     ),
 #if NARROWKARMABUTTONS
                 PatchRecord.Prefix(
@@ -310,7 +310,7 @@ namespace SRPlugin.Features.MaxAttributes20
          * This patch is provided as a proof of concept so you can easily see that the plugin, once built and installed, works.
          */
         [HarmonyPatch(typeof(StatsUtil))]
-        internal class StatsUtilGetAttributeMaxPatch
+        internal class StatsUtilPatch
         {
             [HarmonyPostfix]
             [HarmonyPatch(nameof(StatsUtil.IsNewEtiquetteLevel))]

@@ -113,9 +113,18 @@ namespace SRPlugin
 
         private void _Init()
         {
+            // initialize local only mode for handling Enabled
             if (configItems == null || configItems.Count == 0)
             {
                 _localOnlyIsEnabled = true;
+            }
+            else
+            {
+                ConfigItem<bool> firstConfigItem = configItems[0] as ConfigItem<bool>;
+                if (firstConfigItem == null)
+                {
+                    _localOnlyIsEnabled = true;
+                }
             }
         }
 
@@ -172,7 +181,11 @@ namespace SRPlugin
                 return _localOnlyIsEnabled;
             }
             ConfigItem<bool> firstConfigItem = configItems[0] as ConfigItem<bool>;
-            return (firstConfigItem != null && firstConfigItem.GetValue());
+            if (firstConfigItem == null)
+            {
+                return _localOnlyIsEnabled;
+            }
+            return firstConfigItem.GetValue();
         }
 
         public void SetEnabled(bool enabled)

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using UnityEngine;
 
 namespace SRPlugin
 {
@@ -31,6 +32,21 @@ namespace SRPlugin
             }
         }
 
+        public static string AssetOverrideRoot
+        {
+            get
+            {
+#if false
+                if (_assemblyPath == null)
+                {
+                    _assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                }
+                return _assemblyPath;
+#endif
+                return Application.persistentDataPath;
+            }
+        }
+
         public static ConfigFile ConfigFile
         {
             get
@@ -45,6 +61,11 @@ namespace SRPlugin
             {
                 return GetLogger.Invoke();
             }
+        }
+
+        public static void Squawk(string msg, params object[] args)
+        {
+            Logger.LogInfo($"\nXXXX SRPlugin Squawk XXXX\n\n{string.Format(msg, args)}\n\nXXXXXXXXXXXXXXXXXXXXXXXXX");
         }
 
         public static void Awaken(GetConfigFileDelegate configFileDelegate, GetLoggerDelegate loggerDelegate)

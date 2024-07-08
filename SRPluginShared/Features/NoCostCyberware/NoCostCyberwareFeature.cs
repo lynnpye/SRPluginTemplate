@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using isogame;
-using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace SRPlugin.Features.NoCostCyberware
 {
@@ -12,7 +12,7 @@ namespace SRPlugin.Features.NoCostCyberware
         public NoCostCyberwareFeature()
             : base(new List<ConfigItemBase>()
             {
-                (CINoCostCyberware = new ConfigItem<bool>(FEATURES_SECTION, nameof(NoCostCyberware), true, "overrides the call to GetDerivedEssence... essence-cost-free cyberware!"))
+                (CINoCostCyberware = new ConfigItem<bool>(FEATURES_SECTION, nameof(NoCostCyberware), true, "overrides the call to GetDerivedEssence... essence-cost-free cyberware!")),
             }, new List<PatchRecord>()
             {
                 PatchRecord.Postfix(
@@ -35,11 +35,18 @@ namespace SRPlugin.Features.NoCostCyberware
         {
             [HarmonyPostfix]
             [HarmonyPatch(nameof(Actor.GetDerivedEssence))]
-            public static void GetDerivedEssence_Postfix(ref float __result)
+            public static void GetDerivedEssence_Postfix(ref float __result, Actor __instance)
             {
                 if (!NoCostCyberware) return;
 
-                __result = Math.Max(__result, StatsUtil.GetAttributeMax(isogame.Attribute.Attribute_Magic_Essence));
+                float newDerivedEssence = StatsUtil.GetAttributeMax(isogame.Attribute.Attribute_Magic_Essence);
+
+#if SRHK
+                int cyberwareAffinity = StatsUtil.GetSkill(__instance, Skill.Skill_CyberwareAffinity);
+                newDerivedEssence += CyberwareAffinityEssenceBonusOverride.CyberwareAffinityEssenceBonusOverrideFeature.GetCyberwareAffinityBonusEssence(cyberwareAffinity);
+#endif
+
+                __result = newDerivedEssence;
             }
         }
 
