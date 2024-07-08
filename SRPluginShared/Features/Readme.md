@@ -42,3 +42,12 @@ Formatting a new external drive. Did not choose Quick since it's the first time.
 
 And holding.
 
+##
+Someone reported a bug that, as far as I can tell, actually exists in DFDC and SRHK base games (i.e. not introduced due to my plugin). 
+
+In SRR, you just had armor and armor penetration. It was tracked via the baseAttributes, like STR, BOD, WIL, and so on.
+
+Starting in DFDC you could strip armor, i.e. damage it, like you would HP. So you have a max but you also have a current value. So they added a RP attribute to Player (Resistance Points I guess). And when you get hit with an armor strip like with acid, RP drops. And when you get hit with an Armor buff, RP increases.
+And I guess the point would be that after combat, your RP would be reset to the value of (new function in DFDC) Player.GetMaxArmor(). But they failed to account for armor increases after buying Cyberware and due to Outfit changes.
+
+So I've added a DFDC/SRHK only feature to fix this problem. It's purely cosmetic, but annoying, for sure.
