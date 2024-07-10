@@ -10,11 +10,13 @@ namespace SRPlugin.Features.CyberwareAffinityEssenceBonusOverride
     {
 #if !SRHK
         public CyberwareAffinityEssenceBonusOverrideFeature()
-            : base(new List<ConfigItemBase>()
-            {
-            }, new List<PatchRecord>()
-            {
-            })
+            : base(
+                null,
+                new List<ConfigItemBase>()
+                {
+                }, new List<PatchRecord>()
+                {
+                })
         {
 
         }
@@ -23,29 +25,31 @@ namespace SRPlugin.Features.CyberwareAffinityEssenceBonusOverride
         private static ConfigItem<string> CICyberwareAffinityEssenceBonuses;
 
         public CyberwareAffinityEssenceBonusOverrideFeature()
-            : base(new List<ConfigItemBase>()
-            {
-                (CICyberwareAffinityEssenceBonusesOverride = new ConfigItem<bool>(FEATURES_SECTION, nameof(CyberwareAffinityEssenceBonusesOverride), true, "enable the ability to override essence bonuses, the default value is the game default")),
-                (CICyberwareAffinityEssenceBonuses = new ConfigItem<string>(FEATURES_SECTION, nameof(CyberwareAffinityEssenceBonuses), CADefaultString, CAEssenceBonusHelp)),
-            }, new List<PatchRecord>()
-            {
-                PatchRecord.Postfix(
-                    typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetSkillMax)),
-                    typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetSkillMaxPostfix))
-                    ),
-                PatchRecord.Postfix(
-                    typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetSkillCap)),
-                    typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetSkillCapPostfix))
-                    ),
-                PatchRecord.Prefix(
-                    typeof(Actor).GetMethod(nameof(Actor.GetDerivedEssence)),
-                    typeof(ActorGetDerivedEssencePatch).GetMethod(nameof(ActorGetDerivedEssencePatch.GetDerivedEssence_Postfix))
-                    ),
-                PatchRecord.Postfix(
-                    typeof(KarmaEntry2).GetMethod(nameof(KarmaEntry2.Initialize)),
-                    typeof(KarmaEntry2Patch).GetMethod(nameof(KarmaEntry2Patch.InitializePostfix))
-                    ),
-            })
+            : base(
+                nameof(CyberwareAffinityEssenceBonusesOverride),
+                new List<ConfigItemBase>()
+                {
+                    (CICyberwareAffinityEssenceBonusesOverride = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(CyberwareAffinityEssenceBonusesOverride), true, "enable the ability to override essence bonuses, the default value is the game default")),
+                    (CICyberwareAffinityEssenceBonuses = new ConfigItem<string>(nameof(CyberwareAffinityEssenceBonuses), CADefaultString, CAEssenceBonusHelp)),
+                }, new List<PatchRecord>()
+                {
+                    PatchRecord.Postfix(
+                        typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetSkillMax)),
+                        typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetSkillMaxPostfix))
+                        ),
+                    PatchRecord.Postfix(
+                        typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetSkillCap)),
+                        typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetSkillCapPostfix))
+                        ),
+                    PatchRecord.Prefix(
+                        typeof(Actor).GetMethod(nameof(Actor.GetDerivedEssence)),
+                        typeof(ActorGetDerivedEssencePatch).GetMethod(nameof(ActorGetDerivedEssencePatch.GetDerivedEssence_Postfix))
+                        ),
+                    PatchRecord.Postfix(
+                        typeof(KarmaEntry2).GetMethod(nameof(KarmaEntry2.Initialize)),
+                        typeof(KarmaEntry2Patch).GetMethod(nameof(KarmaEntry2Patch.InitializePostfix))
+                        ),
+                })
         {
 
         }
@@ -229,7 +233,7 @@ the default setting should match the base SRHK game (i.e. +1 additional essence 
                 int[] bonii = Bonuses;
 
                 int skillLevel = 0;
-                
+
                 foreach (KarmaBlock block in ___blockList)
                 {
                     skillLevel++;

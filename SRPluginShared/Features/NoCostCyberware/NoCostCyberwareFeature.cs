@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using isogame;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace SRPlugin.Features.NoCostCyberware
 {
@@ -10,20 +9,22 @@ namespace SRPlugin.Features.NoCostCyberware
         private static ConfigItem<bool> CINoCostCyberware;
 
         public NoCostCyberwareFeature()
-            : base(new List<ConfigItemBase>()
-            {
-                (CINoCostCyberware = new ConfigItem<bool>(FEATURES_SECTION, nameof(NoCostCyberware), true, "overrides the call to GetDerivedEssence... essence-cost-free cyberware!")),
-            }, new List<PatchRecord>()
-            {
-                PatchRecord.Postfix(
-                    typeof(Actor).GetMethod(nameof(Actor.GetDerivedEssence)),
-                    typeof(ActorGetDerivedEssencePatch).GetMethod(nameof(ActorGetDerivedEssencePatch.GetDerivedEssence_Postfix))
-                    ),
-                PatchRecord.Postfix(
-                    typeof(CyberwareScreen).GetMethod(nameof(CyberwareScreen.GetEssenceLostFromItemDef)),
-                    typeof(CyberwareScreenPatch).GetMethod(nameof(CyberwareScreenPatch.GetEssenceLostFromItemDefPrefix))
-                    ),
-            })
+            : base(
+                nameof(NoCostCyberware),
+                new List<ConfigItemBase>()
+                {
+                    (CINoCostCyberware = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(NoCostCyberware), true, "overrides the call to GetDerivedEssence... essence-cost-free cyberware!")),
+                }, new List<PatchRecord>()
+                {
+                    PatchRecord.Postfix(
+                        typeof(Actor).GetMethod(nameof(Actor.GetDerivedEssence)),
+                        typeof(ActorGetDerivedEssencePatch).GetMethod(nameof(ActorGetDerivedEssencePatch.GetDerivedEssence_Postfix))
+                        ),
+                    PatchRecord.Postfix(
+                        typeof(CyberwareScreen).GetMethod(nameof(CyberwareScreen.GetEssenceLostFromItemDef)),
+                        typeof(CyberwareScreenPatch).GetMethod(nameof(CyberwareScreenPatch.GetEssenceLostFromItemDefPrefix))
+                        ),
+                })
         {
 
         }

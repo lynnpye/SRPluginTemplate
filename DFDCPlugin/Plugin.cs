@@ -1,5 +1,4 @@
 ﻿using BepInEx;
-using SRPlugin;
 
 namespace DFDCPlugin
 {
@@ -8,8 +7,9 @@ namespace DFDCPlugin
     {
         private void Awake()
         {
-            SRPlugin.SRPlugin.Awaken(() => this.Config, () => this.Logger);
-   
+            // if you want my feature implementation to try to find your FeatureImpl based feature implementation, do this
+            SRPlugin.SRPlugin.Awaken(this);
+
             // If you aren't managing your Harmony patching directly
             // If you plan to just enable all of your patches immediately
             // Then all you would call here (instead of my FeatureManager above)
@@ -20,8 +20,6 @@ namespace DFDCPlugin
             //      HarmonyInst.PatchAll(assembly);
             // either of those will search your .dll for properly annotated classes
             // and apply their patches.
-
-            Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_NAME} {PluginInfo.PLUGIN_GUID} is loaded!");
         }
     }
 }

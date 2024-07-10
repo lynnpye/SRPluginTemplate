@@ -8,9 +8,11 @@ namespace SRPlugin.Features.AlwaysBeSprinting
         private static ConfigItem<bool> CIAlwaysBeSprinting;
 
         public AlwaysBeSprintingFeature()
-            : base(new List<ConfigItemBase>()
+            : base(
+                nameof(AlwaysBeSprinting),
+                new List<ConfigItemBase>()
                 {
-                    (CIAlwaysBeSprinting = new ConfigItem<bool>(FEATURES_SECTION, nameof(AlwaysBeSprinting), true, "makes some of the longer treks not so bad"))
+                    (CIAlwaysBeSprinting = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(AlwaysBeSprinting), true, "makes some of the longer treks not so bad"))
                 }, new List<PatchRecord>()
                 {
                     PatchRecord.Postfix(typeof(Constants).GetMethod(nameof(Constants.LoadDefaults)),

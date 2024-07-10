@@ -9,17 +9,19 @@ namespace SRPlugin.Features.OverrideStartingKarma
         private static ConfigItem<int> CIOverrideStartingKarma;
 
         public OverrideStartingKarmaFeature()
-            : base(new List<ConfigItemBase>()
-            {
-                (CIEnableOverrideStartingKarma = new ConfigItem<bool>(FEATURES_SECTION, nameof(EnableOverrideStartingKarma), true, "setting to false prevents patching")),
-                (CIOverrideStartingKarma = new ConfigItem<int>(FEATURES_SECTION, nameof(OverrideStartingKarma), 60, "game default is 5; -1 also disables even with the feature enabled, but still patched"))
-            }, new List<PatchRecord>()
-            {
-                PatchRecord.Prefix(
-                    typeof(Constants).GetMethod(nameof(Constants.LoadDefaults)),
-                    typeof(ConstantsPatch).GetMethod(nameof(ConstantsPatch.LoadDefaultsPostfix))
-                    )
-            })
+            : base(
+                nameof(EnableOverrideStartingKarma),
+                new List<ConfigItemBase>()
+                {
+                    (CIEnableOverrideStartingKarma = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(EnableOverrideStartingKarma), true, "setting to false prevents patching")),
+                    (CIOverrideStartingKarma = new ConfigItem<int>(nameof(OverrideStartingKarma), 60, "game default is 5; -1 also disables even with the feature enabled, but still patched"))
+                }, new List<PatchRecord>()
+                {
+                    PatchRecord.Prefix(
+                        typeof(Constants).GetMethod(nameof(Constants.LoadDefaults)),
+                        typeof(ConstantsPatch).GetMethod(nameof(ConstantsPatch.LoadDefaultsPostfix))
+                        )
+                })
         {
 
         }

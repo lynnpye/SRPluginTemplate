@@ -10,18 +10,20 @@ namespace SRPlugin.Features.ReduceSpiritEscape
         private static ConfigItem<float> CISummonAPRefreshPenalty;
 
         public ReduceSpiritEscapeFeature()
-            : base(new List<ConfigItemBase>()
-            {
-                (CIReduceSpiritEscape = new ConfigItem<bool>(FEATURES_SECTION, nameof(ReduceSpiritEscape), true, "decreases the likelihood of a spirit escaping control")),
-                (CISummonDistancePenalty = new ConfigItem<float>(FEATURES_SECTION, nameof(SummonDistancePenalty), 0.5f, "game default is 1.0; lower values reduce summon escape penalty due to distance")),
-                (CISummonAPRefreshPenalty = new ConfigItem<float>(FEATURES_SECTION, nameof(SummonAPRefreshPenalty), 0.5f, "game default is 1.0; lower values reduce summon escape penalty due to AP refreshes"))
-            }, new List<PatchRecord>()
-            {
-                PatchRecord.Postfix(
-                    typeof(Constants).GetMethod(nameof(Constants.LoadDefaults)),
-                    typeof(ConstantsPatch).GetMethod(nameof(ConstantsPatch.LoadDefaultsPostfix))
-                    )
-            })
+            : base(
+                nameof(ReduceSpiritEscape),
+                new List<ConfigItemBase>()
+                {
+                    (CIReduceSpiritEscape = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(ReduceSpiritEscape), true, "decreases the likelihood of a spirit escaping control")),
+                    (CISummonDistancePenalty = new ConfigItem<float>(nameof(SummonDistancePenalty), 0.5f, "game default is 1.0; lower values reduce summon escape penalty due to distance")),
+                    (CISummonAPRefreshPenalty = new ConfigItem<float>(nameof(SummonAPRefreshPenalty), 0.5f, "game default is 1.0; lower values reduce summon escape penalty due to AP refreshes")),
+                }, new List<PatchRecord>()
+                {
+                    PatchRecord.Postfix(
+                        typeof(Constants).GetMethod(nameof(Constants.LoadDefaults)),
+                        typeof(ConstantsPatch).GetMethod(nameof(ConstantsPatch.LoadDefaultsPostfix))
+                        )
+                })
         {
 
         }

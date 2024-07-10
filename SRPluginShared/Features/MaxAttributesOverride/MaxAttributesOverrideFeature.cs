@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SRPlugin.Features.MaxAttributes20
+namespace SRPlugin.Features.MaxAttributesOverride
 {
-    internal class MaxAttributes20Feature : FeatureImpl
+    internal class MaxAttributesOverrideFeature : FeatureImpl
     {
         private static ConfigItem<bool> CIMaxAttributesOverride;
         private static ConfigItem<int> CIResetAllAttributeMaxesToValue;
@@ -57,96 +57,97 @@ namespace SRPlugin.Features.MaxAttributes20
 
         public static string ATTRIBUTES_SECTION = "Attributes";
 
-        public MaxAttributes20Feature()
-            : base(new List<ConfigItemBase>()
-            {
-                (CIMaxAttributesOverride = new ConfigItem<bool>(FEATURES_SECTION, nameof(MaxAttributesOverride), true, "true - set the override values you want for each item, cap of 20, can be lower than game defaults ; false - disables/ignores everything in the [Attributes] section")),
-                (CIResetAllAttributeMaxesToValue = new ConfigItem<int>(FEATURES_SECTION, nameof(ResetAllAttributeMaxesToValue), 0, "1 to 20 - resets all max attributes to specified on next launch, then sets itself to 0 ; 0 or less than 0 or greater than 20 - normalizes to 0, does nothing")),
+        public MaxAttributesOverrideFeature()
+            : base(
+                nameof(MaxAttributesOverride),
+                new List<ConfigItemBase>()
+                {
+                    (CIMaxAttributesOverride = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(MaxAttributesOverride), true, "true - set the override values you want for each item, cap of 20, can be lower than game defaults ; false - disables/ignores everything in the [Attributes] section")),
+                    (CIResetAllAttributeMaxesToValue = new ConfigItem<int>(PLUGIN_FEATURES_SECTION, nameof(ResetAllAttributeMaxesToValue), 0, "1 to 20 - resets all max attributes to specified on next launch, then sets itself to 0 ; 0 or less than 0 or greater than 20 - normalizes to 0, does nothing")),
 #if NARROWKARMABUTTONS
-                (CISimulatedClickLastPossible = new ConfigItem<bool>(FEATURES_SECTION, nameof(SimulatedClickLastPossible), true, "clicking the last value in a karma row simulates clicking the last available, simulates SRHK functionality")),
-                (CINarrowKarmaButton = new ConfigItem<bool>(FEATURES_SECTION, nameof(NarrowKarmaButtons), true, "narrows the karma UI if any attribute max value is in range [18 , 20], has no effect otherwise (should probably leave true)")),
+                    (CISimulatedClickLastPossible = new ConfigItem<bool>(nameof(SimulatedClickLastPossible), true, "clicking the last value in a karma row simulates clicking the last available, simulates SRHK functionality")),
+                    (CINarrowKarmaButton = new ConfigItem<bool>(nameof(NarrowKarmaButtons), true, "narrows the karma UI if any attribute max value is in range [18 , 20], has no effect otherwise (should probably leave true)")),
 #endif
-                // MaxDwarf
-                (CIMaxDwarfBOD = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxDwarfBOD), 20, "max BOD for Dwarfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxDwarfQUI = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxDwarfQUI), 20, "max QUI for Dwarfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxDwarfSTR = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxDwarfSTR), 20, "max STR for Dwarfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxDwarfINT = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxDwarfINT), 20, "max INT for Dwarfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxDwarfWIL = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxDwarfWIL), 20, "max WIL for Dwarfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxDwarfCHA = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxDwarfCHA), 20, "max CHA for Dwarfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                // MaxElf
-                (CIMaxElfBOD = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxElfBOD), 20, "max BOD for Elfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxElfQUI = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxElfQUI), 20, "max QUI for Elfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxElfSTR = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxElfSTR), 20, "max STR for Elfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxElfINT = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxElfINT), 20, "max INT for Elfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxElfWIL = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxElfWIL), 20, "max WIL for Elfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxElfCHA = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxElfCHA), 20, "max CHA for Elfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                // MaxHuman
-                (CIMaxHumanBOD = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxHumanBOD), 20, "max BOD for Humans, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxHumanQUI = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxHumanQUI), 20, "max QUI for Humans, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxHumanSTR = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxHumanSTR), 20, "max STR for Humans, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxHumanINT = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxHumanINT), 20, "max INT for Humans, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxHumanWIL = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxHumanWIL), 20, "max WIL for Humans, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxHumanCHA = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxHumanCHA), 20, "max CHA for Humans, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                // MaxOrk
-                (CIMaxOrkBOD = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxOrkBOD), 20, "max BOD for Orks, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxOrkQUI = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxOrkQUI), 20, "max QUI for Orks, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxOrkSTR = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxOrkSTR), 20, "max STR for Orks, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxOrkINT = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxOrkINT), 20, "max INT for Orks, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxOrkWIL = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxOrkWIL), 20, "max WIL for Orks, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxOrkCHA = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxOrkCHA), 20, "max CHA for Orks, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                // MaxTroll
-                (CIMaxTrollBOD = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxTrollBOD), 20, "max BOD for Trolls, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxTrollQUI = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxTrollQUI), 20, "max QUI for Trolls, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxTrollSTR = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxTrollSTR), 20, "max STR for Trolls, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxTrollINT = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxTrollINT), 20, "max INT for Trolls, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxTrollWIL = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxTrollWIL), 20, "max WIL for Trolls, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                (CIMaxTrollCHA = new ConfigItem<int>(ATTRIBUTES_SECTION, nameof(CIMaxTrollCHA), 20, "max CHA for Trolls, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-
-            }, new List<PatchRecord>()
-            {
-                PatchRecord.Postfix(
-                    typeof(StatsUtil).GetMethod(nameof(StatsUtil.IsNewEtiquetteLevel)),
-                    typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.IsNewEtiquetteLevelPostfix))
-                    ),
-                PatchRecord.Postfix(
-                    typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax)),
-                    typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Postfix))
-                    ),
-                PatchRecord.Postfix(
-                    typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Dwarf)),
-                    typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Dwarf_Postfix))
-                    ),
-                PatchRecord.Postfix(
-                    typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Elf)),
-                    typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Elf_Postfix))
-                    ),
-                PatchRecord.Postfix(
-                    typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Human)),
-                    typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Human_Postfix))
-                    ),
-                PatchRecord.Postfix(
-                    typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Ork)),
-                    typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Ork_Postfix))
-                    ),
-                PatchRecord.Postfix(
-                    typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Troll)),
-                    typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Troll_Postfix))
-                    ),
+                    // MaxDwarf
+                    (CIMaxDwarfBOD = new ConfigItem<int>(nameof(CIMaxDwarfBOD), 20, "max BOD for Dwarfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxDwarfQUI = new ConfigItem<int>(nameof(CIMaxDwarfQUI), 20, "max QUI for Dwarfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxDwarfSTR = new ConfigItem<int>(nameof(CIMaxDwarfSTR), 20, "max STR for Dwarfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxDwarfINT = new ConfigItem<int>(nameof(CIMaxDwarfINT), 20, "max INT for Dwarfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxDwarfWIL = new ConfigItem<int>(nameof(CIMaxDwarfWIL), 20, "max WIL for Dwarfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxDwarfCHA = new ConfigItem<int>(nameof(CIMaxDwarfCHA), 20, "max CHA for Dwarfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    // MaxElf
+                    (CIMaxElfBOD = new ConfigItem<int>(nameof(CIMaxElfBOD), 20, "max BOD for Elfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxElfQUI = new ConfigItem<int>(nameof(CIMaxElfQUI), 20, "max QUI for Elfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxElfSTR = new ConfigItem<int>(nameof(CIMaxElfSTR), 20, "max STR for Elfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxElfINT = new ConfigItem<int>(nameof(CIMaxElfINT), 20, "max INT for Elfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxElfWIL = new ConfigItem<int>(nameof(CIMaxElfWIL), 20, "max WIL for Elfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxElfCHA = new ConfigItem<int>(nameof(CIMaxElfCHA), 20, "max CHA for Elfs, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    // MaxHuman
+                    (CIMaxHumanBOD = new ConfigItem<int>(nameof(CIMaxHumanBOD), 20, "max BOD for Humans, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxHumanQUI = new ConfigItem<int>(nameof(CIMaxHumanQUI), 20, "max QUI for Humans, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxHumanSTR = new ConfigItem<int>(nameof(CIMaxHumanSTR), 20, "max STR for Humans, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxHumanINT = new ConfigItem<int>(nameof(CIMaxHumanINT), 20, "max INT for Humans, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxHumanWIL = new ConfigItem<int>(nameof(CIMaxHumanWIL), 20, "max WIL for Humans, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxHumanCHA = new ConfigItem<int>(nameof(CIMaxHumanCHA), 20, "max CHA for Humans, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    // MaxOrk
+                    (CIMaxOrkBOD = new ConfigItem<int>(nameof(CIMaxOrkBOD), 20, "max BOD for Orks, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxOrkQUI = new ConfigItem<int>(nameof(CIMaxOrkQUI), 20, "max QUI for Orks, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxOrkSTR = new ConfigItem<int>(nameof(CIMaxOrkSTR), 20, "max STR for Orks, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxOrkINT = new ConfigItem<int>(nameof(CIMaxOrkINT), 20, "max INT for Orks, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxOrkWIL = new ConfigItem<int>(nameof(CIMaxOrkWIL), 20, "max WIL for Orks, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxOrkCHA = new ConfigItem<int>(nameof(CIMaxOrkCHA), 20, "max CHA for Orks, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    // MaxTroll
+                    (CIMaxTrollBOD = new ConfigItem<int>(nameof(CIMaxTrollBOD), 20, "max BOD for Trolls, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxTrollQUI = new ConfigItem<int>(nameof(CIMaxTrollQUI), 20, "max QUI for Trolls, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxTrollSTR = new ConfigItem<int>(nameof(CIMaxTrollSTR), 20, "max STR for Trolls, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxTrollINT = new ConfigItem<int>(nameof(CIMaxTrollINT), 20, "max INT for Trolls, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxTrollWIL = new ConfigItem<int>(nameof(CIMaxTrollWIL), 20, "max WIL for Trolls, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                    (CIMaxTrollCHA = new ConfigItem<int>(nameof(CIMaxTrollCHA), 20, "max CHA for Trolls, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
+                }, new List<PatchRecord>()
+                {
+                    PatchRecord.Postfix(
+                        typeof(StatsUtil).GetMethod(nameof(StatsUtil.IsNewEtiquetteLevel)),
+                        typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.IsNewEtiquetteLevelPostfix))
+                        ),
+                    PatchRecord.Postfix(
+                        typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax)),
+                        typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Postfix))
+                        ),
+                    PatchRecord.Postfix(
+                        typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Dwarf)),
+                        typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Dwarf_Postfix))
+                        ),
+                    PatchRecord.Postfix(
+                        typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Elf)),
+                        typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Elf_Postfix))
+                        ),
+                    PatchRecord.Postfix(
+                        typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Human)),
+                        typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Human_Postfix))
+                        ),
+                    PatchRecord.Postfix(
+                        typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Ork)),
+                        typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Ork_Postfix))
+                        ),
+                    PatchRecord.Postfix(
+                        typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Troll)),
+                        typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Troll_Postfix))
+                        ),
 #if NARROWKARMABUTTONS
-                PatchRecord.Prefix(
-                    typeof(KarmaEntry2).GetMethod(nameof(KarmaEntry2.OnBlockClick)),
-                    typeof(KarmaEntry2SimulatedClickLastPossiblePatch).GetMethod(nameof(KarmaEntry2SimulatedClickLastPossiblePatch.OnBlockClickPrefix))
-                    ),
-                PatchRecord.Postfix(
-                    typeof(KarmaEntry2).GetMethod(nameof(KarmaEntry2.Refresh)),
-                    typeof(KarmaEntry2SimulatedClickLastPossiblePatch).GetMethod(nameof(KarmaEntry2SimulatedClickLastPossiblePatch.RefreshPostfix))
-                    ),
-                PatchRecord.Postfix(
-                    typeof(KarmaEntry2).GetMethod(nameof(KarmaEntry2.Initialize)),
-                    typeof(KarmaEntry2SimulatedClickLastPossiblePatch).GetMethod(nameof(KarmaEntry2SimulatedClickLastPossiblePatch.InitializePostfix))
-                    ),
+                    PatchRecord.Prefix(
+                        typeof(KarmaEntry2).GetMethod(nameof(KarmaEntry2.OnBlockClick)),
+                        typeof(KarmaEntry2SimulatedClickLastPossiblePatch).GetMethod(nameof(KarmaEntry2SimulatedClickLastPossiblePatch.OnBlockClickPrefix))
+                        ),
+                    PatchRecord.Postfix(
+                        typeof(KarmaEntry2).GetMethod(nameof(KarmaEntry2.Refresh)),
+                        typeof(KarmaEntry2SimulatedClickLastPossiblePatch).GetMethod(nameof(KarmaEntry2SimulatedClickLastPossiblePatch.RefreshPostfix))
+                        ),
+                    PatchRecord.Postfix(
+                        typeof(KarmaEntry2).GetMethod(nameof(KarmaEntry2.Initialize)),
+                        typeof(KarmaEntry2SimulatedClickLastPossiblePatch).GetMethod(nameof(KarmaEntry2SimulatedClickLastPossiblePatch.InitializePostfix))
+                        ),
 #endif
-            })
+                })
         {
 
         }
@@ -252,6 +253,29 @@ namespace SRPlugin.Features.MaxAttributes20
             }
         }
 
+        public override Version AfterBindMigration(Version startingVersion)
+        {
+            // need to take care of all of the attributes that moved from the old "Attributes" section to
+            // the new feature name based section
+            if (startingVersion == null) return null;
+
+            Version targetVersion = new Version(10, 0);
+            if (startingVersion < targetVersion)
+            {
+                string oldAttributesSection = "Attributes";
+                string newAttributesSection = FEATURES_SETTINGS_SECTION();
+
+                foreach (ConfigItemBase configItem in configItems)
+                {
+                    MigrateSetting(oldAttributesSection, configItem);
+                }
+
+                return null;
+            }
+
+            return null;
+        }
+
         public override void PostApplyPatches()
         {
             // always be cautious
@@ -264,7 +288,7 @@ namespace SRPlugin.Features.MaxAttributes20
                 SRPlugin.Logger.LogInfo($"This launch only, resetting all configuration max attributes to {ResetAllAttributeMaxesToValue}");
             }
 
-            var 
+            var
             attr = isogame.Attribute.Attribute_Body; VerifyAttribute("Dwarf", attr, MaxDwarfBOD, v => MaxDwarfBOD = v);
             attr = isogame.Attribute.Attribute_Quickness; VerifyAttribute("Dwarf", attr, MaxDwarfQUI, v => MaxDwarfQUI = v);
             attr = isogame.Attribute.Attribute_Strength; VerifyAttribute("Dwarf", attr, MaxDwarfSTR, v => MaxDwarfSTR = v);

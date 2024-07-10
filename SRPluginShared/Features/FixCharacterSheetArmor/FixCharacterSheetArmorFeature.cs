@@ -1,46 +1,52 @@
 ﻿using HarmonyLib;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SRPlugin.Features.FixCharacterSheetArmor
 {
     public class FixCharacterSheetArmorFeature : FeatureImpl
     {
-#if !SRR
+#if SRR
+        public FixCharacterSheetArmorFeature()
+            : base(
+                null,
+                new List<ConfigItemBase>()
+                {
+                }, new List<PatchRecord>()
+                {
+                })
+        {
+
+        }
+#else
         private static ConfigItem<bool> CIFixCharacterSheetArmor;
-#endif
 
         public FixCharacterSheetArmorFeature()
-            : base(new List<ConfigItemBase>()
+            : base(
+                nameof(FixCharacterSheetArmor),
+                new List<ConfigItemBase>()
                 {
-#if !SRR
-                (CIFixCharacterSheetArmor = new ConfigItem<bool>(FEATURES_SECTION, nameof(FixCharacterSheetArmor), true, "tries to fix the character sheet not always displaying correct armor values")),
-#endif
-            }, new List<PatchRecord>()
+                    (CIFixCharacterSheetArmor = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(FixCharacterSheetArmor), true, "tries to fix the character sheet not always displaying correct armor values")),
+                }, new List<PatchRecord>()
                 {
-#if !SRR
-                PatchRecord.Postfix(typeof(CharacterSheetWidget).GetMethod(nameof(CharacterSheetWidget.InitializeFromPlayer)),
-                        typeof(CharacterSheetWidgetPatch).GetMethod(nameof(CharacterSheetWidgetPatch.InitializeFromPlayerPostfix))),
+                    PatchRecord.Postfix(typeof(CharacterSheetWidget).GetMethod(nameof(CharacterSheetWidget.InitializeFromPlayer)),
+                            typeof(CharacterSheetWidgetPatch).GetMethod(nameof(CharacterSheetWidgetPatch.InitializeFromPlayerPostfix))),
 
-                PatchRecord.Postfix(typeof(PDA).GetMethod(nameof(PDA.StartPDA)),
-                        typeof(PDAPatch).GetMethod(nameof(PDAPatch.StartPDAPrefix))),
-                PatchRecord.Postfix(typeof(PDA).GetMethod(nameof(PDA.StartPDACharacter)),
-                        typeof(PDAPatch).GetMethod(nameof(PDAPatch.StartPDAPrefix))),
-                PatchRecord.Postfix(typeof(PDA).GetMethod(nameof(PDA.CloseEquipScreen)),
-                        typeof(PDAPatch).GetMethod(nameof(PDAPatch.CloseEquipScreenPostfix))),
+                    PatchRecord.Postfix(typeof(PDA).GetMethod(nameof(PDA.StartPDA)),
+                            typeof(PDAPatch).GetMethod(nameof(PDAPatch.StartPDAPrefix))),
+                    PatchRecord.Postfix(typeof(PDA).GetMethod(nameof(PDA.StartPDACharacter)),
+                            typeof(PDAPatch).GetMethod(nameof(PDAPatch.StartPDAPrefix))),
+                    PatchRecord.Postfix(typeof(PDA).GetMethod(nameof(PDA.CloseEquipScreen)),
+                            typeof(PDAPatch).GetMethod(nameof(PDAPatch.CloseEquipScreenPostfix))),
 
-                PatchRecord.Postfix(typeof(CyberwareScreen).GetMethod(nameof(CyberwareScreen.Confirm)),
-                    typeof(CyberwareScreenPatch).GetMethod(nameof(CyberwareScreenPatch.ConfirmPostfix))),
-                PatchRecord.Postfix(AccessTools.Method(typeof(StoreScreen), "Confirm"),
-                    typeof(StoreScreenPatch).GetMethod(nameof(StoreScreenPatch.ConfirmPostfix))),
-#endif
-            })
+                    PatchRecord.Postfix(typeof(CyberwareScreen).GetMethod(nameof(CyberwareScreen.Confirm)),
+                        typeof(CyberwareScreenPatch).GetMethod(nameof(CyberwareScreenPatch.ConfirmPostfix))),
+                    PatchRecord.Postfix(AccessTools.Method(typeof(StoreScreen), "Confirm"),
+                        typeof(StoreScreenPatch).GetMethod(nameof(StoreScreenPatch.ConfirmPostfix))),
+                })
         {
 
         }
 
-#if !SRR
         public static bool FixCharacterSheetArmor { get => CIFixCharacterSheetArmor.GetValue(); set => CIFixCharacterSheetArmor.SetValue(value); }
 
         public static bool UpdatePlayerRPOnNextEquipScreenClose { get; set; }

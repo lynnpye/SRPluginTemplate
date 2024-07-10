@@ -9,6 +9,7 @@
     <Import_RootNamespace>SRPlugin</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigFileExtension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FeatureImpl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\AlwaysBeSprinting\AlwaysBeSprintingFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\Cheatier\CheatierFeature.cs" />

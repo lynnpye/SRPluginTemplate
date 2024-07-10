@@ -10,22 +10,24 @@ namespace SRPlugin.Features.Cheatier
         private static ConfigItem<bool> CICheatier;
 
         public CheatierFeature()
-            : base(new List<ConfigItemBase>()
-            {
-                (CICheatier = new ConfigItem<bool>(FEATURES_SECTION, nameof(Cheatier), true, "adds a new, cheatier, cheat bar"))
-            }, new List<PatchRecord>()
-            {
-                PatchRecord.Prefix(
-                    //typeof(DebugConsole).GetMethod("DrawCheatBar"),
-                    AccessTools.Method(typeof(DebugConsole), "DrawCheatBar"),
-                    typeof(DebugConsolePatch).GetMethod(nameof(DebugConsolePatch.DrawCheatBarPrefix))
-                    ),
-                PatchRecord.Reverse(
-                    //typeof(DebugConsole).GetMethod("AfterDebugInput"),
-                    AccessTools.Method(typeof(DebugConsole), "AfterDebugInput"),
-                    typeof(DebugConsolePatch).GetMethod(nameof(DebugConsolePatch.AfterDebugInputReversePatch))
-                    ),
-            })
+            : base(
+                nameof(Cheatier),
+                new List<ConfigItemBase>()
+                {
+                    (CICheatier = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(Cheatier), true, "adds a new, cheatier, cheat bar"))
+                }, new List<PatchRecord>()
+                {
+                    PatchRecord.Prefix(
+                        //typeof(DebugConsole).GetMethod("DrawCheatBar"),
+                        AccessTools.Method(typeof(DebugConsole), "DrawCheatBar"),
+                        typeof(DebugConsolePatch).GetMethod(nameof(DebugConsolePatch.DrawCheatBarPrefix))
+                        ),
+                    PatchRecord.Reverse(
+                        //typeof(DebugConsole).GetMethod("AfterDebugInput"),
+                        AccessTools.Method(typeof(DebugConsole), "AfterDebugInput"),
+                        typeof(DebugConsolePatch).GetMethod(nameof(DebugConsolePatch.AfterDebugInputReversePatch))
+                        ),
+                })
         {
         }
 
@@ -50,7 +52,7 @@ namespace SRPlugin.Features.Cheatier
                 {
                     float num = (float)Screen.width * 0.75f;
                     float left = (float)Screen.width - num - 10f;
-                    float top = 200f + 3.6f * ___butHeight;
+                    float top = 200f + (3.6f * ___butHeight);
                     GUILayout.BeginArea(new Rect(left, top, num, ___butHeight * 3.2f));
                     GUILayout.BeginVertical(new GUILayoutOption[0]);
                     GUILayout.BeginHorizontal(new GUILayoutOption[0]);
@@ -157,7 +159,7 @@ namespace SRPlugin.Features.Cheatier
                     }
 #if !SRR
                     bool flag = LazySingletonBehavior<Analyzer>.HasInstance() && LazySingletonBehavior<Analyzer>.Instance.CurrentGameCheated();
-                    string text4 = ((!___showCheats) ? "< Cheatier" : "> Cheatier");
+                    string text4 = (!___showCheats) ? "< Cheatier" : "> Cheatier";
                     if (GUILayout.Button(text4, (!flag) ? __instance.styleTwo : __instance.styleOne,
                         new GUILayoutOption[]
                         {

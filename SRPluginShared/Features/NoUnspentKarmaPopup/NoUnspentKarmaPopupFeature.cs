@@ -8,16 +8,18 @@ namespace SRPlugin.Features.NoUnspentKarmaPopup
         private static ConfigItem<bool> CINoUnspentKarmaPopup;
 
         public NoUnspentKarmaPopupFeature()
-            : base(new List<ConfigItemBase>()
-            {
-                (CINoUnspentKarmaPopup = new ConfigItem<bool>(FEATURES_SECTION, nameof(NoUnspentKarmaPopup), true, "block the popup asking you are you sure you wish to start this scene without spending unspent karma"))
-            }, new List<PatchRecord>()
-            {
-                PatchRecord.Prefix(
-                    typeof(UnspentKarmaListener).GetMethod(nameof(UnspentKarmaListener.CreateUnspentKarmaPopup)),
-                    typeof(UnspentKarmaListenerPatch).GetMethod(nameof(UnspentKarmaListenerPatch.CreateUnspentKarmaPopupPatch))
-                    )
-            })
+            : base(
+                nameof(NoUnspentKarmaPopup),
+                new List<ConfigItemBase>()
+                {
+                    (CINoUnspentKarmaPopup = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(NoUnspentKarmaPopup), true, "block the popup asking you are you sure you wish to start this scene without spending unspent karma"))
+                }, new List<PatchRecord>()
+                {
+                    PatchRecord.Prefix(
+                        typeof(UnspentKarmaListener).GetMethod(nameof(UnspentKarmaListener.CreateUnspentKarmaPopup)),
+                        typeof(UnspentKarmaListenerPatch).GetMethod(nameof(UnspentKarmaListenerPatch.CreateUnspentKarmaPopupPatch))
+                        )
+                })
         {
 
         }
