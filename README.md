@@ -4,8 +4,8 @@ BepInEx based mod template
 ## About this Plugin
 Despite being called a 'template' it includes a lot of actual functionality, which I use to expand on the "Features" stuff I'm playing with. Currently, this plugin offers the following features:
 
-|Feature|Description|SRR|DFDC|SRHK)|
-|-------|-----------|-----------------------------------|
+|Feature|Description|SRR|DFDC|SRHK|
+|---|---|---|---|---|
 | AlwaysBeSprinting | Your character and anyone following you in party mode will move at a brisk sprint in all cases. This feature sets the global threshold for when to switch speeds up on walk and run to 0, effectively making your character sprint everywhere. QoL improvement.|X|X|X|
 |Cheatier|Adds an extra 'Cheatier' cheats menu bar when using the built-in Alt-F1 > Cheats option. The additional Cheatier features are described below.|X|X|X|
 |CyberwareAffinityEssenceBonusOverride|The default essence bonuses from the base game (i.e. +1 essence at CA3 and +1 more (+2 total) at CA6) would be "0 0 1 1 1 2". This lets you change that.|N/A|N/A|X|
