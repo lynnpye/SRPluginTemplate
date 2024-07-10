@@ -19,7 +19,7 @@ namespace SRPlugin.Features.NoCostCyberware
                     typeof(Actor).GetMethod(nameof(Actor.GetDerivedEssence)),
                     typeof(ActorGetDerivedEssencePatch).GetMethod(nameof(ActorGetDerivedEssencePatch.GetDerivedEssence_Postfix))
                     ),
-                PatchRecord.Prefix(
+                PatchRecord.Postfix(
                     typeof(CyberwareScreen).GetMethod(nameof(CyberwareScreen.GetEssenceLostFromItemDef)),
                     typeof(CyberwareScreenPatch).GetMethod(nameof(CyberwareScreenPatch.GetEssenceLostFromItemDefPrefix))
                     ),
@@ -53,12 +53,11 @@ namespace SRPlugin.Features.NoCostCyberware
         [HarmonyPatch(typeof(CyberwareScreen))]
         internal class CyberwareScreenPatch
         {
-            [HarmonyPrefix]
+            [HarmonyPostfix]
             [HarmonyPatch(nameof(CyberwareScreen.GetEssenceLostFromItemDef))]
-            public static bool GetEssenceLostFromItemDefPrefix(ref float __result)
+            public static void GetEssenceLostFromItemDefPrefix(ref float __result)
             {
                 __result = 0f;
-                return false;
             }
         }
     }

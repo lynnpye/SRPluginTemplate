@@ -57,6 +57,22 @@ namespace SRPlugin.Features.Cheatier
                     GUILayout.FlexibleSpace();
                     if (___showCheats && RunManager.HasInstance())
                     {
+                        if (GUILayout.Button("Stash!", new GUILayoutOption[]
+                        {
+                        GUILayout.ExpandWidth(false),
+                        GUILayout.Height(___butHeight)
+                        }))
+                        {
+                            Player player = TurnDirector.ActivePlayer;
+                            if (player != null)
+                            {
+                                Logger.Log(LogChannel.CONSOLE_DESIGNER, LogLevel.Info, "Opened Equipment Screen (gear drop!) ");
+                                SceneSingletonBehavior<PDA>.Instance.ShowEquipScreen(false);
+                                LazySingletonBehavior<Analyzer>.Instance.CountCheat(1);
+                            }
+                            LazySingletonBehavior<InputManager>.Instance.ConsumeFrame();
+                        }
+                        //
                         if (GUILayout.Button("+1APMax", new GUILayoutOption[]
                         {
                         GUILayout.ExpandWidth(false),
