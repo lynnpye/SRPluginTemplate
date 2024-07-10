@@ -131,7 +131,7 @@ namespace SRPlugin.Features.Cheatier
                             LazySingletonBehavior<InputManager>.Instance.ConsumeFrame();
                         }
                         //
-                        if (GUILayout.Button("+1K", new GUILayoutOption[]
+                        if (GUILayout.Button("+1KK", new GUILayoutOption[]
                         {
                         GUILayout.ExpandWidth(false),
                         GUILayout.Height(___butHeight)
