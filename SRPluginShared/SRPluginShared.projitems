@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Features\AlwaysBeSprinting\AlwaysBeSprintingFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\Cheatier\CheatierFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\CyberwareAffinityEssenceBonusOverride\CyberwareAffinityEssenceBonusOverrideFeature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\ExtraWeaponSlot\ExtraWeaponSlotFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\FixCharacterSheetArmor\FixCharacterSheetArmorFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\MaxAttributesOverride\MaxAttributesOverrideFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\NoCostCyberware\NoCostCyberwareFeature.cs" />
@@ -30,5 +31,8 @@
     <None Include="$(MSBuildThisFileDirectory)Features\Readme.md">
       <SubType>Component</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Features\ExtraWeaponSlot\" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,11 +28,92 @@ namespace SRPlugin.Features.Cheatier
                         AccessTools.Method(typeof(DebugConsole), "AfterDebugInput"),
                         typeof(DebugConsolePatch).GetMethod(nameof(DebugConsolePatch.AfterDebugInputReversePatch))
                         ),
+                    PatchRecord.Postfix(
+                        typeof(PDA).GetMethod(nameof(PDA.CloseEquipScreen)),
+                        typeof(PDAPatch).GetMethod(nameof(PDAPatch.CloseEquipScreenPostfix))
+                        ),
                 })
         {
         }
 
         public static bool Cheatier { get => CICheatier.GetValue(); set => CICheatier.SetValue(value); }
+
+        private static bool OnPlayerChangedOnPDAEquipScreenClosed { get; set; }
+
+        [HarmonyPatch(typeof(PDA))]
+        internal class PDAPatch
+        {
+            private static bool DeworkPlayer(Player player, TurnDirector td)
+            {
+                bool flag = false;
+                Dictionary<int, bool> workingMap = AccessTools.Field(typeof(TurnDirector), "workingMap").GetValue(td) as Dictionary<int, bool>;
+                if (player != null && workingMap[player.actorUID])
+                {
+                    td.WorkCount(player.actorUID, false);
+                    player.DoDework();
+                    if (td.FocusedPlayer == player)
+                    {
+                        td.FocusPlayer(null);
+                        if (!td.tryingToAdvanceTeam && !td.GameOver)
+                        {
+                            // local reimplementation of TurnDirectory.FindFocus(), with a few changes
+                            //td.FindFocus();
+
+                            if (td.FocusedPlayer != null)
+                            {
+                                AccessTools.Field(typeof(TurnDirector), "previousFocusedPlayer").SetValue(td, td.FocusedPlayer);
+                            }
+
+                            AccessTools.Field(typeof(TurnDirector), "focusedPlayer").SetValue(td, null);
+                            //focusedPlayer = td.grid.allPlayers.Find((Player x) => workingMap[x.actorUID]);
+                            if (td.FocusedPlayer == null && td.machine.IsState(DirectorState.PLAYERREADY))
+                            {
+                                td.ChooseNextPlayer();
+                            }
+                        }
+                    }
+                    flag = true;
+                }
+                return flag;
+            }
+
+            // The purpose of this part of the code is simple: if you cheat open stash and swap weapons in combat, I want to
+            // keep the weapon panel and ability bar updated.
+            // I had a lot of trouble getting this to work. Once I stumbled across the sequence of calls that worked, I stopped.
+            // There may be better ways of going about this, but I didn't find one.
+            private static IEnumerator StaggeredFix()
+            {
+                DeworkPlayer(SceneSingletonBehavior<TurnDirector>.Instance.FocusedPlayer, SceneSingletonBehavior<TurnDirector>.Instance);
+                yield return true;
+
+                SceneSingletonBehavior<TurnDirector>.Instance.WorkPlayer(SceneSingletonBehavior<TurnDirector>.Instance.PlayerZero);
+                yield return true;
+
+#if SRR
+                SceneSingletonBehavior<HUDManager>.Instance.actionPanel.SetPanel(SceneSingletonBehavior<TurnDirector>.Instance.PlayerZero);
+                SceneSingletonBehavior<HUDManager>.Instance.ClearAbilitySection();
+                SceneSingletonBehavior<HUDManager>.Instance.SetAbilitySection(true);
+#else
+                SceneSingletonBehavior<HUDManager>.Instance.weaponPanel.SetPanel(SceneSingletonBehavior<TurnDirector>.Instance.PlayerZero);
+                SceneSingletonBehavior<HUDManager>.Instance.abilityPanel.Reset();
+                SceneSingletonBehavior<HUDManager>.Instance.abilityPanel.SetPanel(true);
+#endif
+
+                yield break;
+            }
+
+            [HarmonyPostfix]
+            [HarmonyPatch(nameof(PDA.CloseEquipScreen))]
+            public static void CloseEquipScreenPostfix()
+            {
+                if (OnPlayerChangedOnPDAEquipScreenClosed)
+                {
+                    OnPlayerChangedOnPDAEquipScreenClosed = false;
+
+                    SceneSingletonBehavior<TurnDirector>.Instance.StartCoroutine(StaggeredFix());
+                }
+            }
+        }
 
         [HarmonyPatch(typeof(DebugConsole))]
         internal class DebugConsolePatch
@@ -69,6 +151,7 @@ namespace SRPlugin.Features.Cheatier
                             if (player != null)
                             {
                                 Logger.Log(LogChannel.CONSOLE_DESIGNER, LogLevel.Info, "Opened Equipment Screen (gear drop!) ");
+                                OnPlayerChangedOnPDAEquipScreenClosed = true;
                                 SceneSingletonBehavior<PDA>.Instance.ShowEquipScreen(false);
                                 LazySingletonBehavior<Analyzer>.Instance.CountCheat(1);
                             }
