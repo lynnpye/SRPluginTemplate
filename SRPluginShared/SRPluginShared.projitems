@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Features\NoUnspentKarmaPopup\NoUnspentKarmaPopupFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\OverrideStartingKarma\OverrideStartingKarmaFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\ReduceSpiritEscape\ReduceSpiritEscapeFeature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\ShopQoL\ShopQoLFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OverrideableValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PatchRecord.cs" />
     <Compile Include="..\SRPluginShared\PrivateEye.cs" />

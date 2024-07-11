@@ -185,6 +185,11 @@ namespace SRPlugin
             Version targetVersion = new Version(10, 0);
             if (startingVersion < targetVersion)
             {
+                if (configItems == null)
+                {
+                    return null;
+                }
+
                 string oldFeaturesSection = "Features";
                 string newFeaturesSection = PLUGIN_FEATURES_SECTION();
 
@@ -293,6 +298,7 @@ namespace SRPlugin
 
         public virtual void ApplyPatches()
         {
+            if (patchRecords == null) return;
             foreach (var patchRecord in patchRecords)
             {
                 patchRecord.Patch();
@@ -301,6 +307,7 @@ namespace SRPlugin
 
         public virtual void UnapplyPatches()
         {
+            if (patchRecords == null) return;
             foreach (var patchRecord in patchRecords)
             {
                 patchRecord.Unpatch();
