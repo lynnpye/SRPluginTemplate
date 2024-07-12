@@ -6,9 +6,11 @@ Despite being called a 'template' it includes a lot of actual functionality, whi
 
 |Feature|Description|SRR|DFDC|SRHK|
 |---|---|---|---|---|
-| AlwaysBeSprinting | Your character and anyone following you in party mode will move at a brisk sprint in all cases. This feature sets the global threshold for when to switch speeds up on walk and run to 0, effectively making your character sprint everywhere. QoL improvement.|X|X|X|
+|AlwaysBeSprinting|Your character and anyone following you in party mode will move at a brisk sprint in all cases. This feature sets the global threshold for when to switch speeds up on walk and run to 0, effectively making your character sprint everywhere. QoL improvement.|X|X|X|
+|AlwaysGoFirst|Your team always fights first when starting combat.|X|X|X|
 |Cheatier|Adds an extra 'Cheatier' cheats menu bar when using the built-in Alt-F1 > Cheats option. The additional Cheatier features are described below.|X|X|X|
 |CyberwareAffinityEssenceBonusOverride|The default essence bonuses from the base game (i.e. +1 essence at CA3 and +1 more (+2 total) at CA6) would be "0 0 1 1 1 2". This lets you change that.|N/A|N/A|X|
+|ExtraWeaponSlot|Adds +1 max weapon slots. In SRHK, this can push you over the 4 slot max if you aren't careful.|X|X|X|
 |FixCharacterSheetArmor|Fixes a display bug in the base game. The PDA obtains a cached copy of Player data which isn't always updated appropriately, for instance after getting cyberware installed or purchasing and applying a new outfit from a merchant. This resulted in incorrectly, typically low, armor values showing on the PDA character screen. This was caused after SRR when they added armor "damage" in addition to armor "penetration". This fix tries to properly update the stats and also adds a current/max armor display change on the character sheet.|N/A|X|X|
 |MaxAttributesOverride|Originally MaxAttributes20, this feature allows you to set the racial maximums for each attribute and race combination, adjusting the overall GetAttributeMax as a result. It does default everything to 20, but if you don't want to play god-tier, but see no reason why Trolls need a lower max Intelligence than everyone else, you can live your dream.|X|X|X|
 |NoCostCyberware|Adding cyberware incurs no essence costs.|X|X|X|

@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ConfigFileExtension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FeatureImpl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\AlwaysBeSprinting\AlwaysBeSprintingFeature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\AlwaysGoFirst\AlwaysGoFirstFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\Cheatier\CheatierFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\CyberwareAffinityEssenceBonusOverride\CyberwareAffinityEssenceBonusOverrideFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\ExtraWeaponSlot\ExtraWeaponSlotFeature.cs" />
@@ -20,6 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Features\NoCostCyberware\NoCostCyberwareFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\NoUnspentKarmaPopup\NoUnspentKarmaPopupFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\OverrideStartingKarma\OverrideStartingKarmaFeature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\QuitToDesktop\QuitToDesktopFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\ReduceSpiritEscape\ReduceSpiritEscapeFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\ShopQoL\ShopQoLFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OverrideableValue.cs" />
