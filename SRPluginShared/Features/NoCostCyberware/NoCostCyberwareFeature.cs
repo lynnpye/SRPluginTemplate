@@ -58,6 +58,8 @@ namespace SRPlugin.Features.NoCostCyberware
             [HarmonyPatch(nameof(CyberwareScreen.GetEssenceLostFromItemDef))]
             public static void GetEssenceLostFromItemDefPrefix(ref float __result)
             {
+                if (!NoCostCyberware) return;
+
                 __result = 0f;
             }
         }

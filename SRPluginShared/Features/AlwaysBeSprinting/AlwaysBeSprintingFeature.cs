@@ -16,7 +16,7 @@ namespace SRPlugin.Features.AlwaysBeSprinting
                 }, new List<PatchRecord>()
                 {
                     PatchRecord.Postfix(typeof(Constants).GetMethod(nameof(Constants.LoadDefaults)),
-                        typeof(ConstantsPatch).GetMethod(nameof(ConstantsPatch.loadDefaultsPostfix)))
+                        typeof(ConstantsPatch).GetMethod(nameof(ConstantsPatch.LoadDefaultsPostfix)))
                 })
         {
 
@@ -58,7 +58,7 @@ namespace SRPlugin.Features.AlwaysBeSprinting
 
             [HarmonyPostfix]
             [HarmonyPatch(nameof(Constants.LoadDefaults))]
-            public static void loadDefaultsPostfix()
+            public static void LoadDefaultsPostfix()
             {
                 // only applies if allowed
                 ApplyOverrideValues();

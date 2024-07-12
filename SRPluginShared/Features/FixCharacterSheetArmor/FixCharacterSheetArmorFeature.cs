@@ -58,6 +58,8 @@ namespace SRPlugin.Features.FixCharacterSheetArmor
             [HarmonyPatch(nameof(CharacterSheetWidget.InitializeFromPlayer))]
             public static void InitializeFromPlayerPostfix(CharacterSheetWidget __instance, Player player)
             {
+                if (!FixCharacterSheetArmor) return;
+
                 if (!(player == null))
                 {
                     __instance.armorNumber.text = $"{player.RP} / {StatsUtil.GetMaxArmor(player)}";
@@ -73,6 +75,8 @@ namespace SRPlugin.Features.FixCharacterSheetArmor
             [HarmonyPatch(nameof(PDA.StartPDACharacter))]
             public static void StartPDAPrefix(PDA __instance)
             {
+                if (!FixCharacterSheetArmor) return;
+
                 __instance.RefreshCharacter();
             }
 
@@ -80,6 +84,8 @@ namespace SRPlugin.Features.FixCharacterSheetArmor
             [HarmonyPatch(nameof(PDA.CloseEquipScreen))]
             public static void CloseEquipScreenPostfix()
             {
+                if (!FixCharacterSheetArmor) return;
+
                 if (!UpdatePlayerRPOnNextEquipScreenClose) return;
 
                 Player player = SceneSingletonBehavior<TurnDirector>.Instance.PlayerZero;
@@ -98,6 +104,8 @@ namespace SRPlugin.Features.FixCharacterSheetArmor
             [HarmonyPatch(nameof(CyberwareScreen.Confirm))]
             public static void ConfirmPostfix(Player ___thisPlayer)
             {
+                if (!FixCharacterSheetArmor) return;
+
                 if (!(___thisPlayer == null))
                 {
                     ___thisPlayer.SetRP(StatsUtil.GetMaxArmor(___thisPlayer));
@@ -112,6 +120,8 @@ namespace SRPlugin.Features.FixCharacterSheetArmor
             [HarmonyPatch("Confirm")]
             public static void ConfirmPostfix()
             {
+                if (!FixCharacterSheetArmor) return;
+
                 UpdatePlayerRPOnNextEquipScreenClose = true;
             }
         }

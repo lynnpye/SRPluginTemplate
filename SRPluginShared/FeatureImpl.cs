@@ -296,7 +296,7 @@ namespace SRPlugin
 
         }
 
-        public virtual void ApplyPatches()
+        public void ApplyPatches()
         {
             if (patchRecords == null) return;
             foreach (var patchRecord in patchRecords)
@@ -305,7 +305,7 @@ namespace SRPlugin
             }
         }
 
-        public virtual void UnapplyPatches()
+        public void UnapplyPatches()
         {
             if (patchRecords == null) return;
             foreach (var patchRecord in patchRecords)

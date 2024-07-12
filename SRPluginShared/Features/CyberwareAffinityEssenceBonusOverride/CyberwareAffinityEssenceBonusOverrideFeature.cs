@@ -165,6 +165,8 @@ the default setting should match the base SRHK game (i.e. +1 additional essence 
             [HarmonyPatch(nameof(StatsUtil.GetSkillMax))]
             public static void GetSkillMaxPostfix(ref int __result, Skill entry)
             {
+                if (!CyberwareAffinityEssenceBonusesOverride) return;
+
                 if (entry == Skill.Skill_CyberwareAffinity)
                 {
                     __result = Mathf.Min(7, __result);
@@ -176,6 +178,8 @@ the default setting should match the base SRHK game (i.e. +1 additional essence 
             [HarmonyPatch(nameof(StatsUtil.GetSkillCap))]
             public static void GetSkillCapPostfix(ref int __result, Skill entry)
             {
+                if (!CyberwareAffinityEssenceBonusesOverride) return;
+
                 if (entry == Skill.Skill_CyberwareAffinity)
                 {
                     __result = Mathf.Min(7, __result);
@@ -191,6 +195,8 @@ the default setting should match the base SRHK game (i.e. +1 additional essence 
             [HarmonyPatch(nameof(Actor.GetDerivedEssence))]
             public static bool GetDerivedEssence_Postfix(ref float __result, Actor __instance)
             {
+                if (!CyberwareAffinityEssenceBonusesOverride) return true;
+
                 float newDerivedEssence = StatsUtil.GetAttributeMax(isogame.Attribute.Attribute_Magic_Essence);
                 for (int i = 0; i < __instance.activeEffects.Count; i++)
                 {
@@ -223,6 +229,8 @@ the default setting should match the base SRHK game (i.e. +1 additional essence 
             public static void InitializePostfix(KarmaEntry2 __instance, KarmaScreen2.KarmaEntryData ___data,
                 BetterList<KarmaBlock> ___blockList)
             {
+                if (!CyberwareAffinityEssenceBonusesOverride) return;
+
                 // no, we are not modifying anything, we are peeking tyvm
 #pragma warning disable Harmony003 // Harmony non-ref patch parameters modified
                 Skill dataSkill = ___data.skill;

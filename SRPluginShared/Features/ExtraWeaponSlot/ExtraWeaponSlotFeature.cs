@@ -36,6 +36,8 @@ namespace SRPlugin.Features.ExtraWeaponSlot
             [HarmonyPatch(nameof(StatsUtil.GetMaxWeaponSlots))]
             public static void GetMaxWeaponSlotsPostfix(ref int __result, Player player)
             {
+                if (!ExtraWeaponSlot) return;
+
                 __result++;
             }
         }

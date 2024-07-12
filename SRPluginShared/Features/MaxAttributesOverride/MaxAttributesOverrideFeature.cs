@@ -340,6 +340,8 @@ namespace SRPlugin.Features.MaxAttributesOverride
             [HarmonyPatch(nameof(StatsUtil.IsNewEtiquetteLevel))]
             public static void IsNewEtiquetteLevelPostfix(ref bool __result, int charisma)
             {
+                if (!MaxAttributesOverride) return;
+
                 if (charisma > (2 * Constants.NUM_ETIQUETTES))
                 {
                     __result = false;
@@ -511,6 +513,8 @@ namespace SRPlugin.Features.MaxAttributesOverride
             [HarmonyPatch(nameof(KarmaEntry2.OnBlockClick))]
             public static bool OnBlockClickPrefix(KarmaEntry2 __instance, ref KarmaBlock block, string button)
             {
+                if (!MaxAttributesOverride) return true;
+
                 if (!SimulatedClickLastPossible) return true;
 
                 BetterList<KarmaBlock> blockList = AccessTools.Field(typeof(KarmaEntry2), "blockList").GetValue(__instance) as BetterList<KarmaBlock>;
@@ -543,6 +547,8 @@ namespace SRPlugin.Features.MaxAttributesOverride
             [HarmonyPatch(nameof(KarmaEntry2.Refresh))]
             public static void RefreshPostfix(KarmaEntry2 __instance)
             {
+                if (!MaxAttributesOverride) return;
+
                 if (!SimulatedClickLastPossible) return;
 
                 BetterList<KarmaBlock> blockList = AccessTools.Field(typeof(KarmaEntry2), "blockList").GetValue(__instance) as BetterList<KarmaBlock>;
@@ -562,8 +568,7 @@ namespace SRPlugin.Features.MaxAttributesOverride
             [HarmonyPatch(nameof(KarmaEntry2.Initialize))]
             public static void InitializePostfix(KarmaEntry2 __instance)
             {
-                if (!MaxAttributesOverride || !NarrowKarmaButtons
-                    ) return;
+                if (!MaxAttributesOverride || !NarrowKarmaButtons) return;
 
                 __instance.transform.localScale = new Vector3(SCALE_MULTIPLIER, 1f, 1f);
             }

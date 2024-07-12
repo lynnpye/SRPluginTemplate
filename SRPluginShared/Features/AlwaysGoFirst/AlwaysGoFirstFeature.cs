@@ -36,6 +36,8 @@ namespace SRPlugin.Features.AlwaysGoFirst
             [HarmonyPatch(nameof(TurnDirector.TeamRating))]
             public static void TeamRatingPostfix(ref int __result, Team t)
             {
+                if (!AlwaysGoFirst) return;
+
                 List<Player> units = AccessTools.Field(typeof(Team), "units").GetValue(t) as List<Player>;
 
                 if (units == null) return;

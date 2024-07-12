@@ -106,6 +106,8 @@ namespace SRPlugin.Features.Cheatier
             [HarmonyPatch(nameof(PDA.CloseEquipScreen))]
             public static void CloseEquipScreenPostfix()
             {
+                if (!Cheatier) return;
+
                 if (OnPlayerChangedOnPDAEquipScreenClosed)
                 {
                     OnPlayerChangedOnPDAEquipScreenClosed = false;

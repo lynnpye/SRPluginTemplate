@@ -42,6 +42,8 @@ namespace SRPlugin.Features.ShopQoL
             [HarmonyPatch(nameof(StoreScreen.Initialize))]
             public static IEnumerator InitializePostfix(IEnumerator __result, StoreScreen __instance, BetterList<StoreTab> ___activeTabList)
             {
+                if (!ShopQoL) yield break;
+
                 // run original enumerator code
                 while (__result.MoveNext())
                 {
@@ -66,6 +68,8 @@ namespace SRPlugin.Features.ShopQoL
             [HarmonyPatch(typeof(EquipScreen), "SetEquipmentFilters")]
             public static void SetEquipmentFiltersPostfix(EquipScreen __instance, BetterList<BasicButton> ___equipFilterList)
             {
+                if (!ShopQoL) return;
+
                 if (__instance == null || ___equipFilterList == null || ___equipFilterList.size < 2) return;
 
                 var button0 = ___equipFilterList[0];
