@@ -13,6 +13,7 @@ namespace SRPlugin.Features.QuitToDesktop
     {
         private static ConfigItem<bool> CIQuitToDesktop;
         private static ConfigItem<bool> CIRequireConfirmation;
+        private static ConfigItem<bool> CISkipMainMenuConfirmation;
 
         public QuitToDesktopFeature()
             : base(
@@ -21,6 +22,7 @@ namespace SRPlugin.Features.QuitToDesktop
                   {
                       (CIQuitToDesktop = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(QuitToDesktop), true, "adds a button allowing you to quit to desktop from a game")),
                       (CIRequireConfirmation = new ConfigItem<bool>(nameof(RequireConfirmation), true, "require confirmation to quit to desktop, false means one click and you're out so be careful!")),
+                      (CISkipMainMenuConfirmation = new ConfigItem<bool>(nameof(SkipMainMenuConfirmation), true, "no longer requires confirmation when clicking Exit from the Main Menu")),
                   },
                   new List<PatchRecord>()
                   {
@@ -32,6 +34,10 @@ namespace SRPlugin.Features.QuitToDesktop
                           AccessTools.Method(typeof(PDA), "OnEnterMenu"),
                           typeof(PDAPatch).GetMethod(nameof(PDAPatch.OnEnterMenuPostfix))
                           ),
+                      PatchRecord.Prefix(
+                          AccessTools.Method(typeof(MainMenuScene), "OnClickMessage"),
+                          typeof(MainMenuScenePatch).GetMethod(nameof(MainMenuScenePatch.OnClickMessagePrefix))
+                          ),
                   })
         {
 
@@ -39,6 +45,7 @@ namespace SRPlugin.Features.QuitToDesktop
 
         public static bool QuitToDesktop { get => CIQuitToDesktop.GetValue(); set => CIQuitToDesktop.SetValue( value ); }
         public static bool RequireConfirmation { get => CIRequireConfirmation.GetValue(); set => CIRequireConfirmation.SetValue(value); }
+        public static bool SkipMainMenuConfirmation { get => CISkipMainMenuConfirmation.GetValue(); set => CISkipMainMenuConfirmation.SetValue(value); }
 
         // ui element, global for all users
         private static UISlicedSprite qtdButtonBG;
@@ -56,6 +63,12 @@ namespace SRPlugin.Features.QuitToDesktop
             {
                 Application.Quit();
             }
+        }
+
+        public static void BypassMainMenuExitConfirmation()
+        {
+            SRPlugin.Squawk("Skipped confirmation to Exit from MainMenuScene");
+            ExitGameToDesktop();
         }
 
         public static void ConfirmRequest()
@@ -98,6 +111,24 @@ namespace SRPlugin.Features.QuitToDesktop
             target.localScale = source.localScale * 1f;
             target.localPosition = source.localPosition.magnitude * source.localPosition.normalized;
             target.localEulerAngles = source.localEulerAngles * 1f;
+        }
+
+        [HarmonyPatch(typeof(MainMenuScene))]
+        public class MainMenuScenePatch
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch("OnClickMessage")]
+            public static bool OnClickMessagePrefix(string button)
+            {
+                if (SkipMainMenuConfirmation && string.Equals("exitgame", button))
+                {
+                    BypassMainMenuExitConfirmation();
+                    // not strictly needed
+                    return false;
+                }
+
+                return true;
+            }
         }
 
         [HarmonyPatch(typeof(PDA))]
