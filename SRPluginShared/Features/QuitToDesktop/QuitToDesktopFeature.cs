@@ -12,6 +12,7 @@ namespace SRPlugin.Features.QuitToDesktop
     public class QuitToDesktopFeature : FeatureImpl
     {
         private static ConfigItem<bool> CIQuitToDesktop;
+        private static ConfigItem<bool> CIRequireConfirmation;
 
         public QuitToDesktopFeature()
             : base(
@@ -19,6 +20,7 @@ namespace SRPlugin.Features.QuitToDesktop
                   new List<ConfigItemBase>()
                   {
                       (CIQuitToDesktop = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(QuitToDesktop), true, "adds a button allowing you to quit to desktop from a game")),
+                      (CIRequireConfirmation = new ConfigItem<bool>(nameof(RequireConfirmation), true, "require confirmation to quit to desktop, false means one click and you're out so be careful!")),
                   },
                   new List<PatchRecord>()
                   {
@@ -36,6 +38,7 @@ namespace SRPlugin.Features.QuitToDesktop
         }
 
         public static bool QuitToDesktop { get => CIQuitToDesktop.GetValue(); set => CIQuitToDesktop.SetValue( value ); }
+        public static bool RequireConfirmation { get => CIRequireConfirmation.GetValue(); set => CIRequireConfirmation.SetValue(value); }
 
         // ui element, global for all users
         private static UISlicedSprite qtdButtonBG;
@@ -63,8 +66,15 @@ namespace SRPlugin.Features.QuitToDesktop
 
         public static FullscreenPopup qtdConfirmPopup;
 
-        public static void RequestConfirmation()
+        public static void RequestQuitToDesktop()
         {
+            if (!RequireConfirmation)
+            {
+                ConfirmRequest();
+                // not strictly needed
+                return;
+            }
+            
             string title =
 #if SRR || DFDC
                 Strings.T("Quit to Desktop")

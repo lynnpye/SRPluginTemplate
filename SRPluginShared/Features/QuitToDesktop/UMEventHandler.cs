@@ -11,7 +11,7 @@ namespace SRPlugin.Features.QuitToDesktop
         {
             if (string.Equals(MSG_QUIT_TO_DESKTOP, message))
             {
-                QuitToDesktopFeature.RequestConfirmation();
+                QuitToDesktopFeature.RequestQuitToDesktop();
             }
         }
 

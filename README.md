@@ -16,6 +16,7 @@ Despite being called a 'template' it includes a lot of actual functionality, whi
 |NoCostCyberware|Adding cyberware incurs no essence costs.|X|X|X|
 |NoUnspentKarmaPopup|Prevents the popup at the start of a scene telling you you have unspent karma and asking if you might want to spend it now. The kind of thing it would be nice to show on an options UI.|X|X|X|
 |OverrideStartingKarma|The karma you start a new character with. With max attributes all set to 20, you need almost 5500. I default to 60. The game default is 5. It allows 0 (meaning no starting karma), but values below 0, while allowed, disable the feature. It will remain patched but will not actually make any changes.|X|X|X|
+|QuitToDesktop|Adds a button to the PDA menu screen to Quit to Desktop with a single confirmation.|X|X|X|
 |ReduceSpiritEscape|Lets you override the values that add to the escape prevention roll for both distance from your spirit as well as how many AP it has been granted. Can make it easier or harder.|X|X|X|
 |ShopQoL|Minor UI improvements in the shop UI. Currently it just auto-selects the second tab because the first tab, 'All', is the least useful tab.|X|X|NYI|
 
