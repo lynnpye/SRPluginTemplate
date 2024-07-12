@@ -7,9 +7,6 @@ namespace SRPlugin.Features.ShopQoL
 {
     public class ShopQoLFeature : FeatureImpl
     {
-#if SRHK
-        public ShopQoLFeature() : base(null, null, null) {}
-#else
         private static ConfigItem<bool> CIShopQoL;
 
         public ShopQoLFeature()
@@ -78,6 +75,5 @@ namespace SRPlugin.Features.ShopQoL
                 AccessTools.Method(typeof(EquipScreen), "SetActiveFilterButton").Invoke(__instance, [___equipFilterList[1]]);
             }
         }
-#endif
     }
 }

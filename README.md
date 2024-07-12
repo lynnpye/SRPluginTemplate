@@ -18,7 +18,7 @@ Despite being called a 'template' it includes a lot of actual functionality, whi
 |OverrideStartingKarma|The karma you start a new character with. With max attributes all set to 20, you need almost 5500. I default to 60. The game default is 5. It allows 0 (meaning no starting karma), but values below 0, while allowed, disable the feature. It will remain patched but will not actually make any changes.|X|X|X|
 |QuitToDesktop|Adds a button to the PDA menu screen to Quit to Desktop with a single confirmation.|X|X|X|
 |ReduceSpiritEscape|Lets you override the values that add to the escape prevention roll for both distance from your spirit as well as how many AP it has been granted. Can make it easier or harder.|X|X|X|
-|ShopQoL|Minor UI improvements in the shop UI. Currently it just auto-selects the second tab because the first tab, 'All', is the least useful tab.|X|X|NYI|
+|ShopQoL|Minor UI improvements in the shop UI. Currently it just auto-selects the second tab because the first tab, 'All', is the least useful tab.|X|X|X|
 
 The only feature-to-feature dependency is for NoCostCyberware to properly calculate the essence bonus from Cyberware Affinity, it requests that directly from the CyberwareAffinityEssenceBonusOverride feature because
 the base game doesn't have a way to retrieve it from the API; it's just sort of hard-coded in/implemented in a few spots, like the karma screen, the calculation of "derived" essence (i.e. impacted by things like cyberware,
