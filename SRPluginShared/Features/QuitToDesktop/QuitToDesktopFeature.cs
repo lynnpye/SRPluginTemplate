@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Localize;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -25,6 +26,10 @@ namespace SRPlugin.Features.QuitToDesktop
                           AccessTools.Method(typeof(PDAAnchor), "Awake"),
                           typeof(PDAAnchorPatch).GetMethod(nameof(PDAAnchorPatch.AwakePostfix))
                           ),
+                      PatchRecord.Postfix(
+                          AccessTools.Method(typeof(PDA), "OnEnterMenu"),
+                          typeof(PDAPatch).GetMethod(nameof(PDAPatch.OnEnterMenuPostfix))
+                          ),
                   })
         {
 
@@ -32,29 +37,126 @@ namespace SRPlugin.Features.QuitToDesktop
 
         public static bool QuitToDesktop { get => CIQuitToDesktop.GetValue(); set => CIQuitToDesktop.SetValue( value ); }
 
+        // ui element, global for all users
+        private static UISlicedSprite qtdButtonBG;
+        private static UILabel qtdButtonText;
+        private static UIButton qtdButtonUI;
+        private static UMEventHandler qtdButtonHandler;
+
+        public static void ExitGameToDesktop()
+        {
+            if (Application.platform == RuntimePlatform.WindowsPlayer)
+            {
+                Process.GetCurrentProcess().Kill();
+            }
+            else
+            {
+                Application.Quit();
+            }
+        }
+
+        public static void ConfirmRequest()
+        {
+            SRPlugin.Squawk("Confirmed request to Quit to Desktop");
+            ExitGameToDesktop();
+        }
+
+        public static FullscreenPopup qtdConfirmPopup;
+
+        public static void RequestConfirmation()
+        {
+            string title =
+#if SRR || DFDC
+                Strings.T("Quit to Desktop")
+#elif SRHK
+                Strings.T("QUIT TO DESKTOP")
+#endif
+                ;
+            string confirmation = Strings.T("Are you sure you wish to quit to desktop? You will lose any unsaved progress.");
+
+            qtdButtonHandler.IsPopupActive = true;
+            qtdConfirmPopup = FullscreenPopup.CreateFullscreenPopup(title, confirmation, 2, 0, 0, qtdButtonHandler.gameObject, 0);
+        }
+
+        private static void CopyTransformValues(Transform target, Transform source)
+        {
+            target.parent = source.parent;
+
+            target.position = source.position.magnitude * source.position.normalized;
+            target.eulerAngles = source.eulerAngles * 1f;
+
+            target.localScale = source.localScale * 1f;
+            target.localPosition = source.localPosition.magnitude * source.localPosition.normalized;
+            target.localEulerAngles = source.localEulerAngles * 1f;
+        }
+
+        [HarmonyPatch(typeof(PDA))]
+        public class PDAPatch
+        {
+            [HarmonyPostfix]
+            [HarmonyPatch(typeof(PDA), "OnEnterMenu")]
+            public static void OnEnterMenuPostfix(PDA __instance)
+            {
+                // actual order
+                // start by putting them in a disabled state
+#if SRR || DFDC
+                qtdButtonBG.color = Constants.GREY_COLOR;
+                qtdButtonText.color = Constants.WHITE_COLOR;
+                qtdButtonUI.defaultColor = Constants.GREY_COLOR;
+#else
+                qtdButtonBG.color = Constants.DARK_GOLD_ALPHA34;
+                qtdButtonText.color = Constants.PALE_GOLD_COLOR;
+                qtdButtonUI.defaultColor = Constants.DARK_GOLD_ALPHA34;
+#endif
+                qtdButtonUI.UpdateColor(true, true);
+                qtdButtonUI.enabled = false;
+                Utilities.AdjustNGUIAlpha(qtdButtonBG.transform, 0.5f, true);
+                Utilities.AdjustNGUIAlpha(qtdButtonText.transform, 0.5f, true);
+
+                BoxCollider boxCollider = qtdButtonBG.GetComponent<BoxCollider>();
+                if (boxCollider != null)
+                {
+                    boxCollider.enabled = false;
+                }
+
+                // and now we act as though our requirements are satisfied to properly respond
+                qtdButtonBG.color = Constants.DARK_GOLD_COLOR;
+#if SRR || DFDC
+                qtdButtonText.color = Constants.YELLOW_COLOR;
+#else
+                qtdButtonText.color = Constants.PALE_GOLD_COLOR;
+#endif
+                if (boxCollider != null)
+                {
+                    boxCollider.enabled = true;
+                }
+                qtdButtonUI.defaultColor = Constants.DARK_GOLD_COLOR;
+#if SRHK
+                qtdButtonUI.hover = Constants.ORANGE_COLOR;
+                qtdButtonUI.pressed = Utilities.AdjustHSBColor(Constants.ORANGE_COLOR, 1f, 1f, 0.75f);
+#endif
+                qtdButtonUI.UpdateColor(true, true);
+                qtdButtonUI.enabled = true;
+
+                Utilities.AdjustNGUIAlpha(qtdButtonBG.transform, 0.5f, true);
+                Utilities.AdjustNGUIAlpha(qtdButtonUI.transform, 0.5f, true);
+
+                // do we call RefreshMenu()?
+                __instance.RefreshMenu();
+            }
+        }
+
         [HarmonyPatch(typeof(PDAAnchor))]
         public class PDAAnchorPatch
         {
-            private static UISlicedSprite qtdButtonBG;
-            private static UILabel qtdButtonText;
-            private static UIButton qtdButtonUI;
-
-            private static void CopyTransformValues(Transform target, Transform source)
-            {
-                target.parent = source.parent;
-
-                target.position = source.position.magnitude * source.position.normalized;
-                target.eulerAngles = source.eulerAngles * 1f;
-
-                target.localScale = source.localScale * 1f;
-                target.localPosition = source.localPosition.magnitude * source.localPosition.normalized;
-                target.localEulerAngles = source.localEulerAngles * 1f;
-            }
 
             [HarmonyPostfix]
             [HarmonyPatch("Awake")]
             public static void AwakePostfix(PDAAnchor __instance)
             {
+                // this part of the code is not normally part of Awake as the components would already be created
+                // as part of instantiation
+                // we create our button based on the Restart level button, and slide it up away from the other buttons
                 if (qtdButtonBG == null)
                 {
                     qtdButtonBG = UnityEngine.Object.Instantiate(__instance.restartLevelButtonBG) as UISlicedSprite;
@@ -73,7 +175,7 @@ namespace SRPlugin.Features.QuitToDesktop
                     int moveUp =
 #if SRHK
                         150
-#else
+#elif SRR || DFDC
                         140
 #endif
                         ;
@@ -103,7 +205,7 @@ namespace SRPlugin.Features.QuitToDesktop
                     int moveDown =
 #if SRHK
                         25
-#else
+#elif SRR || DFDC
                         65
 #endif
                         ;
@@ -118,7 +220,7 @@ namespace SRPlugin.Features.QuitToDesktop
                         t.localPosition = t.localPosition + Vector3.down * moveDown *
 #if SRHK
                             0.8f
-#else
+#elif SRR || DFDC
                             0.65f
 #endif
                             ;
@@ -129,119 +231,62 @@ namespace SRPlugin.Features.QuitToDesktop
                         t.localPosition = t.localPosition + Vector3.down * moveDown * 0.5f;
                     }
 
-#if SRHK
-                    qtdButtonText.text = Strings.T("QUIT TO DESKTOP");
-#else
-                    qtdButtonText.text = Strings.T("Quit to Desktop");
-#endif
-                    Utilities.AutoScaleUILabel(ref qtdButtonText);
 
-                    qtdButtonBG.gameObject.AddComponent<UMEventHandler>();
+                    qtdButtonHandler = qtdButtonBG.gameObject.AddComponent<UMEventHandler>();
 
-                    BasicButton basicBtn = qtdButtonBG.GetComponent<BasicButton>();
+                    BasicButton basicBtn = qtdButtonBG.gameObject.GetComponent<BasicButton>();
                     if (basicBtn != null)
                     {
                         basicBtn.target = qtdButtonBG.gameObject;
-                        basicBtn.buttonName = MSG_QUIT_TO_DESKTOP;
+                        basicBtn.buttonName = UMEventHandler.MSG_QUIT_TO_DESKTOP;
+                    }
+                    else
+                    {
+                        SRPlugin.Squawk($"Failed to obtain BasicButton from qtdButtonBG");
                     }
 
                     basicBtn = qtdButtonUI.gameObject.GetComponent<BasicButton>();
                     if (basicBtn != null)
                     {
                         basicBtn.target = qtdButtonBG.gameObject;
-                        basicBtn.buttonName = MSG_QUIT_TO_DESKTOP;
-                    }
-
-                    #region Stuff I added to get the color matching right.
-#if SRR || DFDC
-                    qtdButtonBG.color = Constants.GREY_COLOR;
-                    qtdButtonText.color = Constants.WHITE_COLOR;
-#else
-                    qtdButtonBG.color = Constants.DARK_GOLD_ALPHA34;
-                    qtdButtonText.color = Constants.PALE_GOLD_COLOR;
-#endif
-                    var boxCollider = qtdButtonBG.GetComponent<BoxCollider>();
-                    if (boxCollider != null)
-                    {
-                        boxCollider.enabled = false;
-                    }
-#if SRR || DFDC
-                    qtdButtonUI.defaultColor = Constants.GREY_COLOR;
-#else
-                    qtdButtonUI.defaultColor = Constants.DARK_GOLD_ALPHA34;
-#endif
-                    qtdButtonUI.UpdateColor(true, true);
-                    qtdButtonUI.enabled = false;
-                    Utilities.AdjustNGUIAlpha(qtdButtonBG.transform, 0.5f, true);
-                    Utilities.AdjustNGUIAlpha(qtdButtonText.transform, 0.5f, true);
-
-                    // and now we pretend our flag, or whatever, is true
-                        qtdButtonBG.color = Constants.DARK_GOLD_COLOR;
-#if SRR || DFDC
-                        qtdButtonText.color = Constants.YELLOW_COLOR;
-#else
-                        qtdButtonText.color = Constants.PALE_GOLD_COLOR;
-#endif
-                        boxCollider = qtdButtonBG.GetComponent<BoxCollider>();
-                        if (boxCollider != null)
-                        {
-                            boxCollider.enabled = true;
-                        }
-                        qtdButtonUI.defaultColor = Constants.DARK_GOLD_COLOR;
-#if SRHK
-                        qtdButtonUI.hover = Constants.ORANGE_COLOR;
-                        qtdButtonUI.pressed = Utilities.AdjustHSBColor(Constants.ORANGE_COLOR, 1f, 1f, 0.75f);
-#endif
-                        qtdButtonUI.UpdateColor(true, true);
-                        qtdButtonUI.enabled = true;
-                    #endregion
-
-                    string sb = "";
-
-                    sb += "\n\n\n  qtdButtonBG\n===========\n";
-                    foreach (Component c in qtdButtonBG.GetComponents<Component>())
-                    {
-                        sb += $"name:{c.name} type:{c.GetType()}\n";
-                    }
-                    sb += "==========\n";
-
-                    sb += "\n\n\n  qtdButtonText\n===========\n";
-                    foreach (Component c in qtdButtonText.GetComponents<Component>())
-                    {
-                        sb += $"name:{c.name} type:{c.GetType()}\n";
-                    }
-                    sb += "==========\n";
-
-                    sb += "\n\n\n  qtdButtonUI\n===========\n";
-                    foreach (Component c in qtdButtonUI.GetComponents<Component>())
-                    {
-                        sb += $"name:{c.name} type:{c.GetType()}\n";
-                    }
-                    sb += "==========\n";
-
-                    SRPlugin.Squawk(sb);
-                }
-            }
-        }
-
-        private static string MSG_QUIT_TO_DESKTOP = "MSG_QUIT_TO_DESKTOP";
-
-        public class UMEventHandler : MonoBehaviour
-        {
-            public void OnClickMessage(string message)
-            {
-                SRPlugin.Squawk($"OnClickMessage:'{message}'");
-                if (string.Equals(MSG_QUIT_TO_DESKTOP, message))
-                {
-                    if (Application.platform == RuntimePlatform.WindowsPlayer)
-                    {
-                        Process.GetCurrentProcess().Kill();
+                        basicBtn.buttonName = UMEventHandler.MSG_QUIT_TO_DESKTOP;
                     }
                     else
                     {
-                        Application.Quit();
+                        SRPlugin.Squawk($"Failed to obtain BasicButton from qtdButtonUI");
                     }
                 }
+
+                // actual normal steps in Awake
+
+                // set bg/text/ui color values
+#if SRR || DFDC
+                qtdButtonBG.color = Constants.GREY_COLOR;
+                qtdButtonText.color = Constants.WHITE_COLOR;
+
+                qtdButtonUI.duration = 0.1f;
+                qtdButtonUI.pressed = Utilities.AdjustHSBColor(Constants.DARK_GOLD_COLOR, 1f, 1f, 0.8f);
+                qtdButtonUI.hover = Utilities.AdjustHSBColor(Constants.DARK_GOLD_COLOR, 1f, 1f, 0.8f);
+                qtdButtonUI.disabledColor = Constants.GREY_COLOR;
+#else
+                qtdButtonBG.color = Constants.DARK_GOLD_ALPHA34;
+                qtdButtonText.color = Constants.PALE_GOLD_COLOR;
+
+                qtdButtonUI.duration = 0.1f;
+                qtdButtonUI.pressed = Utilities.AdjustHSBColor(Constants.ORANGE_COLOR, 1f, 1f, 0.75f);
+                qtdButtonUI.hover = Constants.ORANGE_COLOR;
+                qtdButtonUI.disabledColor = Constants.DARK_GOLD_ALPHA34;
+#endif
+
+                // set text
+#if SRHK
+                qtdButtonText.text = Strings.T("QUIT TO DESKTOP");
+#elif SRR || DFDC
+                qtdButtonText.text = Strings.T("Quit to Desktop");
+#endif
+
+                // call auto scale on the text
+                Utilities.AutoScaleUILabel(ref qtdButtonText);
             }
         }
     }

@@ -513,14 +513,14 @@ namespace SRPlugin.Features.MaxAttributesOverride
             {
                 if (!SimulatedClickLastPossible) return true;
 
-                BetterList<KarmaBlock> blockList = PrivateEye.GetPrivateFieldValue<BetterList<KarmaBlock>>(__instance, "blockList", null);
+                BetterList<KarmaBlock> blockList = AccessTools.Field(typeof(KarmaEntry2), "blockList").GetValue(__instance) as BetterList<KarmaBlock>;
                 if (blockList == null)
                 {
                     // not sure what happened but let normal code try to handle it
                     return true;
                 }
 
-                KarmaScreen2 parentKarmaScreen = PrivateEye.GetPrivateFieldValue<KarmaScreen2>(__instance, "parentKarmaScreen", null);
+                KarmaScreen2 parentKarmaScreen = AccessTools.Field(typeof(KarmaEntry2), "parentKarmaScreen").GetValue(__instance) as KarmaScreen2;
                 if (!SimulatedClickLastPossible || button != "button" || parentKarmaScreen == null || block.index + 1 < blockList.size)
                 {
                     // disabled, do nothing and let normal code run
@@ -545,7 +545,7 @@ namespace SRPlugin.Features.MaxAttributesOverride
             {
                 if (!SimulatedClickLastPossible) return;
 
-                BetterList<KarmaBlock> blockList = PrivateEye.GetPrivateFieldValue<BetterList<KarmaBlock>>(__instance, "blockList", null);
+                BetterList<KarmaBlock> blockList = AccessTools.Field(typeof(KarmaEntry2), "blockList").GetValue(__instance) as BetterList<KarmaBlock>;
                 if (blockList == null || blockList.size < 1)
                 {
                     // not sure what happened but let normal code try to handle it
