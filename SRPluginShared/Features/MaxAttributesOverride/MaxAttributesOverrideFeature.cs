@@ -263,7 +263,7 @@ namespace SRPlugin.Features.MaxAttributesOverride
             if (startingVersion < targetVersion)
             {
                 string oldAttributesSection = "Attributes";
-                string newAttributesSection = FEATURES_SETTINGS_SECTION();
+                string newAttributesSection = SettingsSectionName();
 
                 foreach (ConfigItemBase configItem in configItems)
                 {

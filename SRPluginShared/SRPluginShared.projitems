@@ -28,6 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)OverrideableValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PatchRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SRPlugin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TypeConverters.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Features\Readme.md">

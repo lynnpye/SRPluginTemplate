@@ -22,7 +22,7 @@ namespace SRPlugin
         public static string AssetOverrideRoot { get => Application.persistentDataPath; }
         public static BaseUnityPlugin Plugin { get; private set; }
         public static ConfigFile ConfigFile { get => Plugin.Config; }
-        private static List<FeatureImpl> FeatureImpls { get => _featureImpls ??= PopulateFeaturesInfo(); }
+        public static List<FeatureImpl> FeatureImpls { get => _featureImpls ??= PopulateFeaturesInfo(); }
         public static string FeatureSectionName { get => _featureSectionName ?? $"_{PluginName} Features"; private set => _featureSectionName = value; }
         public static string HarmonyID { get => _harmonyID ??= $"{Guid.NewGuid().ToString()}"; }
         public static Harmony Harmony { get; private set; }
@@ -40,6 +40,10 @@ namespace SRPlugin
         public static void Awaken(BaseUnityPlugin plugin, string featureSectionName = null)
         {
             Plugin = plugin;
+
+            // Registering the string[] type converter
+            TomlTypeConverter.AddConverter(typeof(string[]), new StringListTypeConverter());
+
             FeatureSectionName = featureSectionName;
 
             Harmony = new Harmony(HarmonyID);

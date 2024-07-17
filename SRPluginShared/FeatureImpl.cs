@@ -100,7 +100,7 @@ namespace SRPlugin
 
         public override void Bind(FeatureImpl feature)
         {
-            SectionName = sectionNameGetter?.Invoke() ?? feature.FEATURES_SETTINGS_SECTION();
+            SectionName = sectionNameGetter?.Invoke() ?? feature.SettingsSectionName();
             configEntry = Bind(SectionName, Key, defaultValue, description);
         }
 
@@ -112,14 +112,27 @@ namespace SRPlugin
 
     public abstract class FeatureImpl
     {
+        public static string PLUGIN_FEATURES_SECTION() => SRPlugin.FeatureSectionName;
+        public static string FEATURES_SETTINGS_SECTION(Type featureImplType)
+        {
+            string sectionName = "Settings";
+            foreach (var fImpl in SRPlugin.FeatureImpls)
+            {
+                if (fImpl.GetType() == featureImplType)
+                {
+                    sectionName = fImpl.SettingsSectionName();
+                    break;
+                }
+            }
+            return sectionName;
+        }
+
         protected List<ConfigItemBase> configItems;
         private List<PatchRecord> patchRecords;
         // only used if there is no enabling flag as the first config item
         private bool _localOnlyIsEnabled;
 
-        public static string PLUGIN_FEATURES_SECTION() => SRPlugin.FeatureSectionName;
-
-        public string FEATURES_SETTINGS_SECTION() => $"{this.Name} Settings";
+        public string SettingsSectionName() => $"{this.Name} Settings";
 
         public FeatureImpl(string name, List<ConfigItemBase> configItems, List<PatchRecord> patchRecords)
         {
