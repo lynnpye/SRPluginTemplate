@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -57,7 +58,7 @@ namespace SRPlugin
             {
                 records.Add(
                     new PatchRecord(
-                        original: AccessTools.Method(classHarmonyPatch.info.declaringType, harmonyPatch.info.methodName),
+                        original: AccessTools.Method(classHarmonyPatch.info.declaringType, harmonyPatch.info.methodName, harmonyPatch.info.argumentTypes),
                         patch: patch,
                         patchType: patchType,
                         priority: priority

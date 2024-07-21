@@ -41,6 +41,17 @@ Cheatier adds an additional cheat bar with the following functions:
 # To use this template
 
 ## Install BepInEx
+### This is why I add a modified copy of BepInEx.cfg to each of the plugins I release...
+At least for me...
+
+When I first installed BepInEx, with no preconfigured BepInEx.cfg, the game crashed on startup, but left behind a new copy of
+BepInEx.cfg. BepInEx documentation mentioned possibly needing to make changes as described below to get the bootstrapping
+working correctly. I made the following changes and that let things proceed for everything I tried to do. Understand that
+this is technically a non-default configuration, but it works for me.
+
+### So, here's what I did, and I should probably just add the default BepInEx.cfg to my plugins somewhere...
+And I copied this and the blurb above from SRAssetPatcherPlugin because this is technically home base for me. :)
+
 Go to the [BepInEx Releases page](https://github.com/BepInEx/BepInEx/releases/) and download BepInEx_win_x86_5.4.23.2.zip [(link to the release tag)](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.23.2) [(direct link to the zip)](https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.2/BepInEx_win_x86_5.4.23.2.zip) and install it to your game folder as normal.
 
 Run the game once now that BepInEx is installed. The game will likely crash. If it does not, exit the game as soon as the main menu appears.
