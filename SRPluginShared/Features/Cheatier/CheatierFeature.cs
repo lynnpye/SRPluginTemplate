@@ -16,22 +16,14 @@ namespace SRPlugin.Features.Cheatier
                 new List<ConfigItemBase>()
                 {
                     (CICheatier = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(Cheatier), true, "adds a new, cheatier, cheat bar"))
-                }, new List<PatchRecord>()
+                }, new List<PatchRecord>(
+                    PatchRecord.RecordPatches(
+                        AccessTools.Method(typeof(DebugConsolePatch), nameof(DebugConsolePatch.AfterDebugInputReversePatch)),
+                        AccessTools.Method(typeof(DebugConsolePatch), nameof(DebugConsolePatch.DrawCheatBarPrefix)),
+                        AccessTools.Method(typeof(PDAPatch), nameof(PDAPatch.CloseEquipScreenPostfix))
+                        )
+                    )
                 {
-                    PatchRecord.Prefix(
-                        //typeof(DebugConsole).GetMethod("DrawCheatBar"),
-                        AccessTools.Method(typeof(DebugConsole), "DrawCheatBar"),
-                        typeof(DebugConsolePatch).GetMethod(nameof(DebugConsolePatch.DrawCheatBarPrefix))
-                        ),
-                    PatchRecord.Reverse(
-                        //typeof(DebugConsole).GetMethod("AfterDebugInput"),
-                        AccessTools.Method(typeof(DebugConsole), "AfterDebugInput"),
-                        typeof(DebugConsolePatch).GetMethod(nameof(DebugConsolePatch.AfterDebugInputReversePatch))
-                        ),
-                    PatchRecord.Postfix(
-                        typeof(PDA).GetMethod(nameof(PDA.CloseEquipScreen)),
-                        typeof(PDAPatch).GetMethod(nameof(PDAPatch.CloseEquipScreenPostfix))
-                        ),
                 })
         {
         }

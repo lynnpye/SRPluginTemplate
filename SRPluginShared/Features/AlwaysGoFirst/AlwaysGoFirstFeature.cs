@@ -16,12 +16,12 @@ namespace SRPlugin.Features.AlwaysGoFirst
                   {
                       (CIAlwaysGoFirst = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(AlwaysGoFirst), true, "your team will always go first in combat")),
                   },
-                  new List<PatchRecord>()
+                  new List<PatchRecord>(
+                      PatchRecord.RecordPatches(
+                          AccessTools.Method(typeof(TurnDirectorPatch), nameof(TurnDirectorPatch.TeamRatingPostfix))
+                      )
+                  )
                   {
-                      PatchRecord.Postfix(
-                          typeof(TurnDirector).GetMethod(nameof(TurnDirector.TeamRating)),
-                          typeof(TurnDirectorPatch).GetMethod(nameof(TurnDirectorPatch.TeamRatingPostfix))
-                          ),
                   })
         {
 
@@ -42,6 +42,7 @@ namespace SRPlugin.Features.AlwaysGoFirst
 
         public override void HandleDisabled()
         {
+            if (combatEventListener == null) return;
 #if SRHK
             KeyMessenger<string, global::GenericArgs>.RemoveKeyListener(GenericEvents.EVENT_ONCOMBATWRAPUP, new KeyMessenger<string, global::GenericArgs>.KeyDelegate(combatEventListener.OnCombatWrapup));
             KeyMessenger<string, global::GenericArgs>.RemoveKeyListener(GenericEvents.EVENT_ONCOMBATINTENSE, new KeyMessenger<string, global::GenericArgs>.KeyDelegate(combatEventListener.OnCombatIntense));

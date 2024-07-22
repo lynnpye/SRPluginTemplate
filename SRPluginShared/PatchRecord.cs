@@ -71,62 +71,71 @@ namespace SRPlugin
 
         public static List<PatchRecord> RecordPatches(params MethodInfo[] patches)
         {
-            int priority = Priority.Normal;
-
-            if (patches == null || patches.Length == 0) return null;
-
-            List<PatchRecord> records = new List<PatchRecord>();
-
-            foreach (var patch in patches)
+            try
             {
-                var harmonyPatches = patch.GetCustomAttributes(typeof(HarmonyPatch), false) as HarmonyPatch[];
-                if (harmonyPatches == null || harmonyPatches.Length == 0)
+                int priority = Priority.Normal;
+
+                if (patches == null || patches.Length == 0) return null;
+
+                List<PatchRecord> records = new List<PatchRecord>();
+
+                foreach (var patch in patches)
                 {
-                    SRPlugin.Logger.LogInfo($"Method {patch.Name} is not a Harmony patch method.");
-                    return null;
-                }
-
-                var classHarmonyPatches = patch.DeclaringType.GetCustomAttributes(typeof(HarmonyPatch), false) as HarmonyPatch[];
-                if (classHarmonyPatches == null || classHarmonyPatches.Length == 0)
-                {
-                    SRPlugin.Logger.LogInfo($"Class {patch.DeclaringType.Name} is not a Harmony patch class.");
-                    return null;
-                }
-
-                PatchType patchType = PatchType.None;
-
-                var harmonyPrefix = patch.GetCustomAttributes(typeof(HarmonyPrefix), false) as HarmonyPrefix[];
-                if (harmonyPrefix != null && harmonyPrefix.Length > 0)
-                {
-                    patchType = PatchType.Prefix;
-
-                    records.AddRange(MakePatchRecords(patch, patchType, priority, classHarmonyPatches[0], harmonyPatches));
-                }
-
-                if (patchType == PatchType.None)
-                {
-                    var harmonyPostfix = patch.GetCustomAttributes(typeof(HarmonyPostfix), false) as HarmonyPostfix[];
-                    if (harmonyPostfix != null && harmonyPostfix.Length > 0)
+                    var harmonyPatches = patch.GetCustomAttributes(typeof(HarmonyPatch), false) as HarmonyPatch[];
+                    if (harmonyPatches == null || harmonyPatches.Length == 0)
                     {
-                        patchType = PatchType.Postfix;
+                        SRPlugin.Logger.LogInfo($"Method {patch.Name} is not a Harmony patch method.");
+                        return null;
+                    }
+
+                    var classHarmonyPatches = patch.DeclaringType.GetCustomAttributes(typeof(HarmonyPatch), false) as HarmonyPatch[];
+                    if (classHarmonyPatches == null || classHarmonyPatches.Length == 0)
+                    {
+                        SRPlugin.Logger.LogInfo($"Class {patch.DeclaringType.Name} is not a Harmony patch class.");
+                        return null;
+                    }
+
+                    PatchType patchType = PatchType.None;
+
+                    var harmonyPrefix = patch.GetCustomAttributes(typeof(HarmonyPrefix), false) as HarmonyPrefix[];
+                    if (harmonyPrefix != null && harmonyPrefix.Length > 0)
+                    {
+                        patchType = PatchType.Prefix;
 
                         records.AddRange(MakePatchRecords(patch, patchType, priority, classHarmonyPatches[0], harmonyPatches));
                     }
-                }
 
-                if (patchType == PatchType.None)
-                {
-                    var harmonyReverse = patch.GetCustomAttributes(typeof(HarmonyReversePatch), false) as HarmonyReversePatch[];
-                    if (harmonyReverse != null && harmonyReverse.Length > 0)
+                    if (patchType == PatchType.None)
                     {
-                        patchType = PatchType.Reverse;
+                        var harmonyPostfix = patch.GetCustomAttributes(typeof(HarmonyPostfix), false) as HarmonyPostfix[];
+                        if (harmonyPostfix != null && harmonyPostfix.Length > 0)
+                        {
+                            patchType = PatchType.Postfix;
 
-                        records.AddRange(MakePatchRecords(patch, patchType, priority, classHarmonyPatches[0], harmonyPatches));
+                            records.AddRange(MakePatchRecords(patch, patchType, priority, classHarmonyPatches[0], harmonyPatches));
+                        }
+                    }
+
+                    if (patchType == PatchType.None)
+                    {
+                        var harmonyReverse = patch.GetCustomAttributes(typeof(HarmonyReversePatch), false) as HarmonyReversePatch[];
+                        if (harmonyReverse != null && harmonyReverse.Length > 0)
+                        {
+                            patchType = PatchType.Reverse;
+
+                            records.AddRange(MakePatchRecords(patch, patchType, priority, classHarmonyPatches[0], harmonyPatches));
+                        }
                     }
                 }
+
+                return records;
             }
-
-            return records;
+            catch (Exception e)
+            {
+                SRPlugin.Squawk($"Exception while recording patches.");
+                SRPlugin.Squawk(e.ToString());
+                return null;
+            }
         }
 
         public void Patch()
@@ -151,8 +160,8 @@ namespace SRPlugin
             }
             catch (Exception e)
             {
-                SRPlugin.Logger.LogInfo($"Exception while patching. original:{original}:  patch:{patch}:  patchType:{patchType}:");
-                SRPlugin.Logger.LogInfo(e);
+                SRPlugin.Squawk($"Exception while patching. original:{original}:  patch:{patch}:  patchType:{patchType}:");
+                SRPlugin.Squawk(e.ToString());
             }
         }
 

@@ -17,12 +17,12 @@ namespace SRPlugin.Features.ReduceSpiritEscape
                     (CIReduceSpiritEscape = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(ReduceSpiritEscape), true, "decreases the likelihood of a spirit escaping control")),
                     (CISummonDistancePenalty = new ConfigItem<float>(nameof(SummonDistancePenalty), 0.5f, "game default is 1.0; lower values reduce summon escape penalty due to distance")),
                     (CISummonAPRefreshPenalty = new ConfigItem<float>(nameof(SummonAPRefreshPenalty), 0.5f, "game default is 1.0; lower values reduce summon escape penalty due to AP refreshes")),
-                }, new List<PatchRecord>()
+                }, new List<PatchRecord>(
+                        PatchRecord.RecordPatches(
+                            AccessTools.Method(typeof(ConstantsPatch), nameof(ConstantsPatch.LoadDefaultsPostfix))
+                            )
+                    )
                 {
-                    PatchRecord.Postfix(
-                        typeof(Constants).GetMethod(nameof(Constants.LoadDefaults)),
-                        typeof(ConstantsPatch).GetMethod(nameof(ConstantsPatch.LoadDefaultsPostfix))
-                        )
                 })
         {
 

@@ -16,16 +16,16 @@ namespace SRPlugin.Features.ShopQoL
                 {
                     (CIShopQoL = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(ShopQoL), true, "adds some QoL changes to the store experience")),
                 },
-                new List<PatchRecord>()
+                new List<PatchRecord>(
+                        PatchRecord.RecordPatches(
+                            AccessTools.Method(typeof(StoreScreenPatch), nameof(StoreScreenPatch.InitializePostfix))
+#if !SRHK
+                            ,
+                            AccessTools.Method(typeof(EquipScreenPatch), nameof(EquipScreenPatch.SetEquipmentFiltersPostfix))
+#endif
+                            )
+                    )
                 {
-                    PatchRecord.Postfix(
-                        typeof(StoreScreen).GetMethod(nameof(StoreScreen.Initialize)),
-                        typeof(StoreScreenPatch).GetMethod(nameof(StoreScreenPatch.InitializePostfix))
-                        ),
-                    PatchRecord.Postfix(
-                        AccessTools.Method(typeof(EquipScreen), "SetEquipmentFilters"),
-                        typeof(EquipScreenPatch).GetMethod(nameof(EquipScreenPatch.SetEquipmentFiltersPostfix))
-                        ),
                 })
         {
         }
@@ -58,6 +58,7 @@ namespace SRPlugin.Features.ShopQoL
             }
         }
 
+#if !SRHK
         [HarmonyPatch(typeof(EquipScreen))]
         internal class EquipScreenPatch
         {
@@ -75,5 +76,6 @@ namespace SRPlugin.Features.ShopQoL
                 AccessTools.Method(typeof(EquipScreen), "SetActiveFilterButton").Invoke(__instance, [___equipFilterList[1]]);
             }
         }
+#endif
     }
 }

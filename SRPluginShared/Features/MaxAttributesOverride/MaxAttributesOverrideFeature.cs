@@ -103,50 +103,24 @@ namespace SRPlugin.Features.MaxAttributesOverride
                     (CIMaxTrollINT = new ConfigItem<int>(nameof(CIMaxTrollINT), 20, "max INT for Trolls, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
                     (CIMaxTrollWIL = new ConfigItem<int>(nameof(CIMaxTrollWIL), 20, "max WIL for Trolls, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
                     (CIMaxTrollCHA = new ConfigItem<int>(nameof(CIMaxTrollCHA), 20, "max CHA for Trolls, set to 0 or less to disable (defaults to whatever the value is without this patch)")),
-                }, new List<PatchRecord>()
-                {
-                    PatchRecord.Postfix(
-                        typeof(StatsUtil).GetMethod(nameof(StatsUtil.IsNewEtiquetteLevel)),
-                        typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.IsNewEtiquetteLevelPostfix))
-                        ),
-                    PatchRecord.Postfix(
-                        typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax)),
-                        typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Postfix))
-                        ),
-                    PatchRecord.Postfix(
-                        typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Dwarf)),
-                        typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Dwarf_Postfix))
-                        ),
-                    PatchRecord.Postfix(
-                        typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Elf)),
-                        typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Elf_Postfix))
-                        ),
-                    PatchRecord.Postfix(
-                        typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Human)),
-                        typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Human_Postfix))
-                        ),
-                    PatchRecord.Postfix(
-                        typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Ork)),
-                        typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Ork_Postfix))
-                        ),
-                    PatchRecord.Postfix(
-                        typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetAttributeMax_Troll)),
-                        typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetAttributeMax_Troll_Postfix))
-                        ),
+                }, new List<PatchRecord>(
+                        PatchRecord.RecordPatches(
+                            AccessTools.Method(typeof(StatsUtilPatch), nameof(StatsUtilPatch.IsNewEtiquetteLevelPostfix)),
+                            AccessTools.Method(typeof(StatsUtilPatch), nameof(StatsUtilPatch.GetAttributeMax_Postfix)),
+                            AccessTools.Method(typeof(StatsUtilPatch), nameof(StatsUtilPatch.GetAttributeMax_Dwarf_Postfix)),
+                            AccessTools.Method(typeof(StatsUtilPatch), nameof(StatsUtilPatch.GetAttributeMax_Elf_Postfix)),
+                            AccessTools.Method(typeof(StatsUtilPatch), nameof(StatsUtilPatch.GetAttributeMax_Human_Postfix)),
+                            AccessTools.Method(typeof(StatsUtilPatch), nameof(StatsUtilPatch.GetAttributeMax_Ork_Postfix)),
+                            AccessTools.Method(typeof(StatsUtilPatch), nameof(StatsUtilPatch.GetAttributeMax_Troll_Postfix))
 #if NARROWKARMABUTTONS
-                    PatchRecord.Prefix(
-                        typeof(KarmaEntry2).GetMethod(nameof(KarmaEntry2.OnBlockClick)),
-                        typeof(KarmaEntry2SimulatedClickLastPossiblePatch).GetMethod(nameof(KarmaEntry2SimulatedClickLastPossiblePatch.OnBlockClickPrefix))
-                        ),
-                    PatchRecord.Postfix(
-                        typeof(KarmaEntry2).GetMethod(nameof(KarmaEntry2.Refresh)),
-                        typeof(KarmaEntry2SimulatedClickLastPossiblePatch).GetMethod(nameof(KarmaEntry2SimulatedClickLastPossiblePatch.RefreshPostfix))
-                        ),
-                    PatchRecord.Postfix(
-                        typeof(KarmaEntry2).GetMethod(nameof(KarmaEntry2.Initialize)),
-                        typeof(KarmaEntry2SimulatedClickLastPossiblePatch).GetMethod(nameof(KarmaEntry2SimulatedClickLastPossiblePatch.InitializePostfix))
-                        ),
+                            ,
+                            AccessTools.Method(typeof(KarmaEntry2SimulatedClickLastPossiblePatch), nameof(KarmaEntry2SimulatedClickLastPossiblePatch.OnBlockClickPrefix)),
+                            AccessTools.Method(typeof(KarmaEntry2SimulatedClickLastPossiblePatch), nameof(KarmaEntry2SimulatedClickLastPossiblePatch.RefreshPostfix)),
+                            AccessTools.Method(typeof(KarmaEntry2SimulatedClickLastPossiblePatch), nameof(KarmaEntry2SimulatedClickLastPossiblePatch.InitializePostfix))
 #endif
+                            )
+                    )
+                {
                 })
         {
 

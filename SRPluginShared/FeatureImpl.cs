@@ -415,16 +415,23 @@ namespace SRPlugin
 
         public void SyncToEnabledState()
         {
-            if (IsEnabled())
+            try
             {
-                PreApplyPatches();
-                ApplyPatches();
-                PostApplyPatches();
+                if (IsEnabled())
+                {
+                    PreApplyPatches();
+                    ApplyPatches();
+                    PostApplyPatches();
+                }
+                else
+                {
+                    UnapplyPatches();
+                    HandleDisabled();
+                }
             }
-            else
+            catch (Exception e)
             {
-                UnapplyPatches();
-                HandleDisabled();
+                SRPlugin.Squawk(e.ToString());
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
 
 namespace SRPlugin.Features.AlwaysBeSprinting
@@ -13,10 +14,12 @@ namespace SRPlugin.Features.AlwaysBeSprinting
                 new List<ConfigItemBase>()
                 {
                     (CIAlwaysBeSprinting = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(AlwaysBeSprinting), true, "makes some of the longer treks not so bad"))
-                }, new List<PatchRecord>()
+                }, new List<PatchRecord>(
+                    PatchRecord.RecordPatches(
+                        AccessTools.Method(typeof(ConstantsPatch), nameof(ConstantsPatch.LoadDefaultsPostfix))
+                        )
+                    )
                 {
-                    PatchRecord.Postfix(typeof(Constants).GetMethod(nameof(Constants.LoadDefaults)),
-                        typeof(ConstantsPatch).GetMethod(nameof(ConstantsPatch.LoadDefaultsPostfix)))
                 })
         {
 
@@ -24,7 +27,17 @@ namespace SRPlugin.Features.AlwaysBeSprinting
 
         public override void HandleDisabled()
         {
-            ResetStartingValues();
+            try
+            {
+                OVCombatSprint.Reset();
+                OVCombatWalk.Reset();
+                OVFriendlySprint.Reset();
+                OVFriendlyWalk.Reset();
+            }
+            catch (Exception e)
+            {
+                SRPlugin.Squawk(e.ToString());
+            }
         }
 
         public static bool AlwaysBeSprinting { get => CIAlwaysBeSprinting.GetValue(); set => CIAlwaysBeSprinting.SetValue(value); }
@@ -34,22 +47,21 @@ namespace SRPlugin.Features.AlwaysBeSprinting
         private static OverrideableValue<int> OVFriendlySprint = new OverrideableValue<int>(Constants.MOVE_THRESHOLD_FRIENDLY_SPRINT, (v) => Constants.MOVE_THRESHOLD_FRIENDLY_SPRINT = v, 0);
         private static OverrideableValue<int> OVFriendlyWalk = new OverrideableValue<int>(Constants.MOVE_THRESHOLD_FRIENDLY_WALK, (v) => Constants.MOVE_THRESHOLD_FRIENDLY_WALK = v, 0);
 
-        public static void ResetStartingValues()
-        {
-            OVCombatSprint.Reset();
-            OVCombatWalk.Reset();
-            OVFriendlySprint.Reset();
-            OVFriendlyWalk.Reset();
-        }
-
         public static void ApplyOverrideValues()
         {
-            if (!AlwaysBeSprinting) return;
+            try
+            {
+                if (!AlwaysBeSprinting) return;
 
-            OVCombatSprint.SetDefault();
-            OVCombatWalk.SetDefault();
-            OVFriendlySprint.SetDefault();
-            OVFriendlyWalk.SetDefault();
+                OVCombatSprint.SetDefault();
+                OVCombatWalk.SetDefault();
+                OVFriendlySprint.SetDefault();
+                OVFriendlyWalk.SetDefault();
+            }
+            catch (Exception e)
+            {
+                SRPlugin.Squawk(e.ToString());
+            }
         }
 
         [HarmonyPatch(typeof(Constants))]

@@ -31,24 +31,15 @@ namespace SRPlugin.Features.CyberwareAffinityEssenceBonusOverride
                 {
                     (CICyberwareAffinityEssenceBonusesOverride = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(CyberwareAffinityEssenceBonusesOverride), true, "enable the ability to override essence bonuses, the default value is the game default")),
                     (CICyberwareAffinityEssenceBonuses = new ConfigItem<string>(nameof(CyberwareAffinityEssenceBonuses), CADefaultString, CAEssenceBonusHelp)),
-                }, new List<PatchRecord>()
+                }, new List<PatchRecord>(
+                        PatchRecord.RecordPatches(
+                            AccessTools.Method(typeof(StatsUtilPatch), nameof(StatsUtilPatch.GetSkillMaxPostfix)),
+                            AccessTools.Method(typeof(StatsUtilPatch), nameof(StatsUtilPatch.GetSkillCapPostfix)),
+                            AccessTools.Method(typeof(ActorGetDerivedEssencePatch), nameof(ActorGetDerivedEssencePatch.GetDerivedEssence_Postfix)),
+                            AccessTools.Method(typeof(KarmaEntry2Patch), nameof(KarmaEntry2Patch.InitializePostfix))
+                            )
+                    )
                 {
-                    PatchRecord.Postfix(
-                        typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetSkillMax)),
-                        typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetSkillMaxPostfix))
-                        ),
-                    PatchRecord.Postfix(
-                        typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetSkillCap)),
-                        typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetSkillCapPostfix))
-                        ),
-                    PatchRecord.Prefix(
-                        typeof(Actor).GetMethod(nameof(Actor.GetDerivedEssence)),
-                        typeof(ActorGetDerivedEssencePatch).GetMethod(nameof(ActorGetDerivedEssencePatch.GetDerivedEssence_Postfix))
-                        ),
-                    PatchRecord.Postfix(
-                        typeof(KarmaEntry2).GetMethod(nameof(KarmaEntry2.Initialize)),
-                        typeof(KarmaEntry2Patch).GetMethod(nameof(KarmaEntry2Patch.InitializePostfix))
-                        ),
                 })
         {
 

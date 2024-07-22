@@ -14,16 +14,14 @@ namespace SRPlugin.Features.NoCostCyberware
                 new List<ConfigItemBase>()
                 {
                     (CINoCostCyberware = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(NoCostCyberware), true, "overrides the call to GetDerivedEssence... essence-cost-free cyberware!")),
-                }, new List<PatchRecord>()
+                }, new List<PatchRecord>(
+                        PatchRecord.RecordPatches(
+                            AccessTools.Method(typeof(ActorGetDerivedEssencePatch), nameof(ActorGetDerivedEssencePatch.GetDerivedEssence_Postfix)),
+                            AccessTools.Method(typeof(CyberwareScreenPatch), nameof(CyberwareScreenPatch.GetEssenceLostFromItemDefPrefix))
+                            
+                            )
+                    )
                 {
-                    PatchRecord.Postfix(
-                        typeof(Actor).GetMethod(nameof(Actor.GetDerivedEssence)),
-                        typeof(ActorGetDerivedEssencePatch).GetMethod(nameof(ActorGetDerivedEssencePatch.GetDerivedEssence_Postfix))
-                        ),
-                    PatchRecord.Postfix(
-                        typeof(CyberwareScreen).GetMethod(nameof(CyberwareScreen.GetEssenceLostFromItemDef)),
-                        typeof(CyberwareScreenPatch).GetMethod(nameof(CyberwareScreenPatch.GetEssenceLostFromItemDefPrefix))
-                        ),
                 })
         {
 

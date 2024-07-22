@@ -16,12 +16,12 @@ namespace SRPlugin.Features.ExtraWeaponSlot
                 {
                     (CIExtraWeaponSlot = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(ExtraWeaponSlot), true, "adds 1 extra weapon slot")),
                 },
-                new List<PatchRecord>()
+                new List<PatchRecord>(
+                        PatchRecord.RecordPatches(
+                            AccessTools.Method(typeof(StatsUtilPatch), nameof(StatsUtilPatch.GetMaxWeaponSlotsPostfix))
+                            )
+                    )
                 {
-                    PatchRecord.Postfix(
-                        typeof(StatsUtil).GetMethod(nameof(StatsUtil.GetMaxWeaponSlots)),
-                        typeof(StatsUtilPatch).GetMethod(nameof(StatsUtilPatch.GetMaxWeaponSlotsPostfix))
-                        ),
                 })
         {
 

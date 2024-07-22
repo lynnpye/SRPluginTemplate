@@ -15,12 +15,12 @@ namespace SRPlugin.Features.OverrideStartingKarma
                 {
                     (CIEnableOverrideStartingKarma = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(EnableOverrideStartingKarma), true, "setting to false prevents patching")),
                     (CIOverrideStartingKarma = new ConfigItem<int>(nameof(OverrideStartingKarma), 60, "game default is 5; -1 also disables even with the feature enabled, but still patched"))
-                }, new List<PatchRecord>()
+                }, new List<PatchRecord>(
+                        PatchRecord.RecordPatches(
+                            AccessTools.Method(typeof(ConstantsPatch), nameof(ConstantsPatch.LoadDefaultsPostfix))
+                            )
+                    )
                 {
-                    PatchRecord.Prefix(
-                        typeof(Constants).GetMethod(nameof(Constants.LoadDefaults)),
-                        typeof(ConstantsPatch).GetMethod(nameof(ConstantsPatch.LoadDefaultsPostfix))
-                        )
                 })
         {
 

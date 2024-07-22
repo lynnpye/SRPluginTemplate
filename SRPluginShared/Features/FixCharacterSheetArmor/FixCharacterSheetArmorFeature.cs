@@ -26,22 +26,16 @@ namespace SRPlugin.Features.FixCharacterSheetArmor
                 new List<ConfigItemBase>()
                 {
                     (CIFixCharacterSheetArmor = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(FixCharacterSheetArmor), true, "tries to fix the character sheet not always displaying correct armor values")),
-                }, new List<PatchRecord>()
+                }, new List<PatchRecord>(
+                        PatchRecord.RecordPatches(
+                            AccessTools.Method(typeof(CharacterSheetWidgetPatch), nameof(CharacterSheetWidgetPatch.InitializeFromPlayerPostfix)),
+                            AccessTools.Method(typeof(PDAPatch), nameof(PDAPatch.StartPDAPrefix)),
+                            AccessTools.Method(typeof(PDAPatch), nameof(PDAPatch.CloseEquipScreenPostfix)),
+                            AccessTools.Method(typeof(CyberwareScreenPatch), nameof(CyberwareScreenPatch.ConfirmPostfix)),
+                            AccessTools.Method(typeof(StoreScreenPatch), nameof(StoreScreenPatch.ConfirmPostfix))
+                            )
+                    )
                 {
-                    PatchRecord.Postfix(typeof(CharacterSheetWidget).GetMethod(nameof(CharacterSheetWidget.InitializeFromPlayer)),
-                            typeof(CharacterSheetWidgetPatch).GetMethod(nameof(CharacterSheetWidgetPatch.InitializeFromPlayerPostfix))),
-
-                    PatchRecord.Postfix(typeof(PDA).GetMethod(nameof(PDA.StartPDA)),
-                            typeof(PDAPatch).GetMethod(nameof(PDAPatch.StartPDAPrefix))),
-                    PatchRecord.Postfix(typeof(PDA).GetMethod(nameof(PDA.StartPDACharacter)),
-                            typeof(PDAPatch).GetMethod(nameof(PDAPatch.StartPDAPrefix))),
-                    PatchRecord.Postfix(typeof(PDA).GetMethod(nameof(PDA.CloseEquipScreen)),
-                            typeof(PDAPatch).GetMethod(nameof(PDAPatch.CloseEquipScreenPostfix))),
-
-                    PatchRecord.Postfix(typeof(CyberwareScreen).GetMethod(nameof(CyberwareScreen.Confirm)),
-                        typeof(CyberwareScreenPatch).GetMethod(nameof(CyberwareScreenPatch.ConfirmPostfix))),
-                    PatchRecord.Postfix(AccessTools.Method(typeof(StoreScreen), "Confirm"),
-                        typeof(StoreScreenPatch).GetMethod(nameof(StoreScreenPatch.ConfirmPostfix))),
                 })
         {
 

@@ -24,20 +24,14 @@ namespace SRPlugin.Features.QuitToDesktop
                       (CIRequireConfirmation = new ConfigItem<bool>(nameof(RequireConfirmation), true, "require confirmation to quit to desktop, false means one click and you're out so be careful!")),
                       (CISkipMainMenuConfirmation = new ConfigItem<bool>(nameof(SkipMainMenuConfirmation), true, "no longer requires confirmation when clicking Exit from the Main Menu")),
                   },
-                  new List<PatchRecord>()
+                  new List<PatchRecord>(
+                      PatchRecord.RecordPatches(
+                          AccessTools.Method(typeof(PDAAnchorPatch), nameof(PDAAnchorPatch.AwakePostfix)),
+                          AccessTools.Method(typeof(PDAPatch), nameof(PDAPatch.OnEnterMenuPostfix)),
+                          AccessTools.Method(typeof(MainMenuScenePatch), nameof(MainMenuScenePatch.OnClickMessagePrefix))
+                          )
+                      )
                   {
-                      PatchRecord.Postfix(
-                          AccessTools.Method(typeof(PDAAnchor), "Awake"),
-                          typeof(PDAAnchorPatch).GetMethod(nameof(PDAAnchorPatch.AwakePostfix))
-                          ),
-                      PatchRecord.Postfix(
-                          AccessTools.Method(typeof(PDA), "OnEnterMenu"),
-                          typeof(PDAPatch).GetMethod(nameof(PDAPatch.OnEnterMenuPostfix))
-                          ),
-                      PatchRecord.Prefix(
-                          AccessTools.Method(typeof(MainMenuScene), "OnClickMessage"),
-                          typeof(MainMenuScenePatch).GetMethod(nameof(MainMenuScenePatch.OnClickMessagePrefix))
-                          ),
                   })
         {
 
