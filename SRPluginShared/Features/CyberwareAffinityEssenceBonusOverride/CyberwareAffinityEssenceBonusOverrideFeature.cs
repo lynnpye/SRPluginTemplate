@@ -35,7 +35,7 @@ namespace SRPlugin.Features.CyberwareAffinityEssenceBonusOverride
                         PatchRecord.RecordPatches(
                             AccessTools.Method(typeof(StatsUtilPatch), nameof(StatsUtilPatch.GetSkillMaxPostfix)),
                             AccessTools.Method(typeof(StatsUtilPatch), nameof(StatsUtilPatch.GetSkillCapPostfix)),
-                            AccessTools.Method(typeof(ActorGetDerivedEssencePatch), nameof(ActorGetDerivedEssencePatch.GetDerivedEssence_Postfix)),
+                            AccessTools.Method(typeof(ActorGetDerivedEssencePatch), nameof(ActorGetDerivedEssencePatch.GetDerivedEssencePostfix)),
                             AccessTools.Method(typeof(KarmaEntry2Patch), nameof(KarmaEntry2Patch.InitializePostfix))
                             )
                     )
@@ -181,34 +181,28 @@ the default setting should match the base SRHK game (i.e. +1 additional essence 
         [HarmonyPatch(typeof(Actor))]
         internal class ActorGetDerivedEssencePatch
         {
-            // fully replacing the original functionality I suppose :(
-            [HarmonyPrefix]
+            [HarmonyPostfix]
             [HarmonyPatch(nameof(Actor.GetDerivedEssence))]
-            public static bool GetDerivedEssence_Postfix(ref float __result, Actor __instance)
+            public static void GetDerivedEssencePostfix(ref float __result, Actor __instance)
             {
-                if (!CyberwareAffinityEssenceBonusesOverride) return true;
-
-                float newDerivedEssence = StatsUtil.GetAttributeMax(isogame.Attribute.Attribute_Magic_Essence);
-                for (int i = 0; i < __instance.activeEffects.Count; i++)
-                {
-                    StatusEffects statusEffects = __instance.activeEffects[i];
-                    for (int j = 0; j < statusEffects.statMods.Count; j++)
-                    {
-                        StatMod statMod = statusEffects.statMods[j];
-                        if (statMod.attribute == isogame.Attribute.Attribute_Magic_Essence)
-                        {
-                            newDerivedEssence += statMod.floatModValue;
-                        }
-                    }
-                }
+                if (!CyberwareAffinityEssenceBonusesOverride) return;
 
                 int cyberwareAffinity = StatsUtil.GetSkill(__instance, Skill.Skill_CyberwareAffinity);
+                float derivedEssenceAdjustment = 0f;
 
-                newDerivedEssence += GetCyberwareAffinityBonusEssence(cyberwareAffinity);
+                // remove anything added via base game cyberware affinity bonuses
+                if (cyberwareAffinity >= 6)
+                {
+                    derivedEssenceAdjustment = -2f;
+                }
+                else if (cyberwareAffinity >= 3)
+                {
+                    derivedEssenceAdjustment = -1f;
+                }
 
-                __result = newDerivedEssence;
+                derivedEssenceAdjustment += GetCyberwareAffinityBonusEssence(cyberwareAffinity);
 
-                return false;
+                __result = __result + derivedEssenceAdjustment;
             }
         }
 
