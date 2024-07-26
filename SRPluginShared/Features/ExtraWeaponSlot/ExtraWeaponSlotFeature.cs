@@ -1,7 +1,7 @@
-﻿using HarmonyLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using HarmonyLib;
 
 namespace SRPlugin.Features.ExtraWeaponSlot
 {
@@ -14,20 +14,32 @@ namespace SRPlugin.Features.ExtraWeaponSlot
                 nameof(ExtraWeaponSlot),
                 new List<ConfigItemBase>()
                 {
-                    (CIExtraWeaponSlot = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(ExtraWeaponSlot), true, "adds 1 extra weapon slot")),
+                    (
+                        CIExtraWeaponSlot = new ConfigItem<bool>(
+                            PLUGIN_FEATURES_SECTION,
+                            nameof(ExtraWeaponSlot),
+                            true,
+                            "adds 1 extra weapon slot"
+                        )
+                    ),
                 },
                 new List<PatchRecord>(
-                        PatchRecord.RecordPatches(
-                            AccessTools.Method(typeof(StatsUtilPatch), nameof(StatsUtilPatch.GetMaxWeaponSlotsPostfix))
-                            )
+                    PatchRecord.RecordPatches(
+                        AccessTools.Method(
+                            typeof(StatsUtilPatch),
+                            nameof(StatsUtilPatch.GetMaxWeaponSlotsPostfix)
+                        )
                     )
+                )
                 {
-                })
+                    }
+            ) { }
+
+        public static bool ExtraWeaponSlot
         {
-
+            get => CIExtraWeaponSlot.GetValue();
+            set => CIExtraWeaponSlot.SetValue(value);
         }
-
-        public static bool ExtraWeaponSlot { get => CIExtraWeaponSlot.GetValue(); set => CIExtraWeaponSlot.SetValue(value); }
 
         [HarmonyPatch(typeof(StatsUtil))]
         internal class StatsUtilPatch
@@ -36,7 +48,8 @@ namespace SRPlugin.Features.ExtraWeaponSlot
             [HarmonyPatch(nameof(StatsUtil.GetMaxWeaponSlots))]
             public static void GetMaxWeaponSlotsPostfix(ref int __result, Player player)
             {
-                if (!ExtraWeaponSlot) return;
+                if (!ExtraWeaponSlot)
+                    return;
 
                 __result++;
             }

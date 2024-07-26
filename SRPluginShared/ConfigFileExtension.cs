@@ -1,6 +1,6 @@
-﻿using BepInEx.Configuration;
+﻿using System.Collections.Generic;
+using BepInEx.Configuration;
 using HarmonyLib;
-using System.Collections.Generic;
 
 namespace SRPlugin
 {
@@ -9,7 +9,8 @@ namespace SRPlugin
         public static Dictionary<ConfigDefinition, string> GetOrphans(this ConfigFile file)
         {
             var orphanGrabber = AccessTools.PropertyGetter(typeof(ConfigFile), "OrphanedEntries");
-            return orphanGrabber.Invoke(SRPlugin.ConfigFile, null) as Dictionary<ConfigDefinition, string>;
+            return orphanGrabber.Invoke(SRPlugin.ConfigFile, null)
+                as Dictionary<ConfigDefinition, string>;
         }
     }
 }

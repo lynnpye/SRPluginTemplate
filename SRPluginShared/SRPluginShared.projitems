@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Features\CyberwareAffinityEssenceBonusOverride\CyberwareAffinityEssenceBonusOverrideFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\ExtraWeaponSlot\ExtraWeaponSlotFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\FixCharacterSheetArmor\FixCharacterSheetArmorFeature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\LoadLocalSaves\LoadLocalSavesFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\MaxAttributesOverride\MaxAttributesOverrideFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\NoCostCyberware\NoCostCyberwareFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Features\NoUnspentKarmaPopup\NoUnspentKarmaPopupFeature.cs" />

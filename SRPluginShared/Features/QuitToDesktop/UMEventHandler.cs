@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SRPlugin.Features.QuitToDesktop
 {
@@ -16,9 +15,14 @@ namespace SRPlugin.Features.QuitToDesktop
         }
 
         public bool IsPopupActive { get; set; }
+
         public void OnPopupClosed(FullscreenPopup.PopupContents result)
         {
-            if (!IsPopupActive) return;
+            if (!IsPopupActive)
+            {
+                return;
+            }
+
             IsPopupActive = false;
 
             if (result.result == FullscreenPopup.PopupResult.POSITIVE)

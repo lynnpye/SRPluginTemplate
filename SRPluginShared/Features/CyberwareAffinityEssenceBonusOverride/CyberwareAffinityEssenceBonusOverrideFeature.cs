@@ -1,7 +1,7 @@
-﻿using HarmonyLib;
+﻿using System.Collections.Generic;
+using HarmonyLib;
 using isogame;
 using Localize;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace SRPlugin.Features.CyberwareAffinityEssenceBonusOverride
@@ -10,16 +10,7 @@ namespace SRPlugin.Features.CyberwareAffinityEssenceBonusOverride
     {
 #if !SRHK
         public CyberwareAffinityEssenceBonusOverrideFeature()
-            : base(
-                null,
-                new List<ConfigItemBase>()
-                {
-                }, new List<PatchRecord>()
-                {
-                })
-        {
-
-        }
+            : base(null, new List<ConfigItemBase>() { }, new List<PatchRecord>() { }) { }
 #else
         private static ConfigItem<bool> CICyberwareAffinityEssenceBonusesOverride;
         private static ConfigItem<string> CICyberwareAffinityEssenceBonuses;
@@ -29,21 +20,45 @@ namespace SRPlugin.Features.CyberwareAffinityEssenceBonusOverride
                 nameof(CyberwareAffinityEssenceBonusesOverride),
                 new List<ConfigItemBase>()
                 {
-                    (CICyberwareAffinityEssenceBonusesOverride = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(CyberwareAffinityEssenceBonusesOverride), true, "enable the ability to override essence bonuses, the default value is the game default")),
-                    (CICyberwareAffinityEssenceBonuses = new ConfigItem<string>(nameof(CyberwareAffinityEssenceBonuses), CADefaultString, CAEssenceBonusHelp)),
-                }, new List<PatchRecord>(
-                        PatchRecord.RecordPatches(
-                            AccessTools.Method(typeof(StatsUtilPatch), nameof(StatsUtilPatch.GetSkillMaxPostfix)),
-                            AccessTools.Method(typeof(StatsUtilPatch), nameof(StatsUtilPatch.GetSkillCapPostfix)),
-                            AccessTools.Method(typeof(ActorGetDerivedEssencePatch), nameof(ActorGetDerivedEssencePatch.GetDerivedEssencePostfix)),
-                            AccessTools.Method(typeof(KarmaEntry2Patch), nameof(KarmaEntry2Patch.InitializePostfix))
-                            )
+                    (
+                        CICyberwareAffinityEssenceBonusesOverride = new ConfigItem<bool>(
+                            PLUGIN_FEATURES_SECTION,
+                            nameof(CyberwareAffinityEssenceBonusesOverride),
+                            true,
+                            "enable the ability to override essence bonuses, the default value is the game default"
+                        )
+                    ),
+                    (
+                        CICyberwareAffinityEssenceBonuses = new ConfigItem<string>(
+                            nameof(CyberwareAffinityEssenceBonuses),
+                            CADefaultString,
+                            CAEssenceBonusHelp
+                        )
+                    ),
+                },
+                new List<PatchRecord>(
+                    PatchRecord.RecordPatches(
+                        AccessTools.Method(
+                            typeof(StatsUtilPatch),
+                            nameof(StatsUtilPatch.GetSkillMaxPostfix)
+                        ),
+                        AccessTools.Method(
+                            typeof(StatsUtilPatch),
+                            nameof(StatsUtilPatch.GetSkillCapPostfix)
+                        ),
+                        AccessTools.Method(
+                            typeof(ActorGetDerivedEssencePatch),
+                            nameof(ActorGetDerivedEssencePatch.GetDerivedEssencePostfix)
+                        ),
+                        AccessTools.Method(
+                            typeof(KarmaEntry2Patch),
+                            nameof(KarmaEntry2Patch.InitializePostfix)
+                        )
                     )
+                )
                 {
-                })
-        {
-
-        }
+                    }
+            ) { }
 
         public override void PostApplyPatches()
         {
@@ -53,14 +68,25 @@ namespace SRPlugin.Features.CyberwareAffinityEssenceBonusOverride
         private static string CADefaultString = "0 0 1 0 0 1 0";
         private static string CASkill = "Cyberware Affinity";
         private static string CAEssenceBonusHelp =
-$@"this should be a string containing a set of numbers, with the order of numbers
+            $@"this should be a string containing a set of numbers, with the order of numbers
 matching increasing points in {CASkill}, so the first number is the bonus essence points
 from having 1 point in {CASkill}, the second is the bonus for 2 points, and so on
 the number listed is the bonus additional essence for gaining that level. all bonuses are cumulative.
 the default setting should match the base SRHK game (i.e. +1 additional essence at 3 and 6 ranks in Cyberware Affinity";
 
-        public static bool CyberwareAffinityEssenceBonusesOverride { get => CICyberwareAffinityEssenceBonusesOverride.GetValue(); set => CICyberwareAffinityEssenceBonusesOverride.SetValue(value); }
-        public static string CyberwareAffinityEssenceBonuses { get => CyberwareAffinityEssenceBonusesOverride ? CICyberwareAffinityEssenceBonuses.GetValue() : CADefaultString; set => CICyberwareAffinityEssenceBonuses.SetValue(value); }
+        public static bool CyberwareAffinityEssenceBonusesOverride
+        {
+            get => CICyberwareAffinityEssenceBonusesOverride.GetValue();
+            set => CICyberwareAffinityEssenceBonusesOverride.SetValue(value);
+        }
+        public static string CyberwareAffinityEssenceBonuses
+        {
+            get =>
+                CyberwareAffinityEssenceBonusesOverride
+                    ? CICyberwareAffinityEssenceBonuses.GetValue()
+                    : CADefaultString;
+            set => CICyberwareAffinityEssenceBonuses.SetValue(value);
+        }
 
         private static int[] GetCyberwareAffinityBonuses()
         {
@@ -128,11 +154,7 @@ the default setting should match the base SRHK game (i.e. +1 additional essence 
                 }
                 return _bonuses;
             }
-
-            private set
-            {
-                _bonuses = value;
-            }
+            private set { _bonuses = value; }
         }
 
         public static float GetCyberwareAffinityBonusEssence(int cyberwareAffinity)
@@ -156,7 +178,8 @@ the default setting should match the base SRHK game (i.e. +1 additional essence 
             [HarmonyPatch(nameof(StatsUtil.GetSkillMax))]
             public static void GetSkillMaxPostfix(ref int __result, Skill entry)
             {
-                if (!CyberwareAffinityEssenceBonusesOverride) return;
+                if (!CyberwareAffinityEssenceBonusesOverride)
+                    return;
 
                 if (entry == Skill.Skill_CyberwareAffinity)
                 {
@@ -169,7 +192,8 @@ the default setting should match the base SRHK game (i.e. +1 additional essence 
             [HarmonyPatch(nameof(StatsUtil.GetSkillCap))]
             public static void GetSkillCapPostfix(ref int __result, Skill entry)
             {
-                if (!CyberwareAffinityEssenceBonusesOverride) return;
+                if (!CyberwareAffinityEssenceBonusesOverride)
+                    return;
 
                 if (entry == Skill.Skill_CyberwareAffinity)
                 {
@@ -185,9 +209,13 @@ the default setting should match the base SRHK game (i.e. +1 additional essence 
             [HarmonyPatch(nameof(Actor.GetDerivedEssence))]
             public static void GetDerivedEssencePostfix(ref float __result, Actor __instance)
             {
-                if (!CyberwareAffinityEssenceBonusesOverride) return;
+                if (!CyberwareAffinityEssenceBonusesOverride)
+                    return;
 
-                int cyberwareAffinity = StatsUtil.GetSkill(__instance, Skill.Skill_CyberwareAffinity);
+                int cyberwareAffinity = StatsUtil.GetSkill(
+                    __instance,
+                    Skill.Skill_CyberwareAffinity
+                );
                 float derivedEssenceAdjustment = 0f;
 
                 // remove anything added via base game cyberware affinity bonuses
@@ -211,17 +239,22 @@ the default setting should match the base SRHK game (i.e. +1 additional essence 
         {
             [HarmonyPostfix]
             [HarmonyPatch(nameof(KarmaEntry2.Initialize))]
-            public static void InitializePostfix(KarmaEntry2 __instance, KarmaScreen2.KarmaEntryData ___data,
-                BetterList<KarmaBlock> ___blockList)
+            public static void InitializePostfix(
+                KarmaEntry2 __instance,
+                KarmaScreen2.KarmaEntryData ___data,
+                BetterList<KarmaBlock> ___blockList
+            )
             {
-                if (!CyberwareAffinityEssenceBonusesOverride) return;
+                if (!CyberwareAffinityEssenceBonusesOverride)
+                    return;
 
                 // no, we are not modifying anything, we are peeking tyvm
 #pragma warning disable Harmony003 // Harmony non-ref patch parameters modified
                 Skill dataSkill = ___data.skill;
 #pragma warning restore Harmony003 // Harmony non-ref patch parameters modified
 
-                if (__instance == null || Skill.Skill_CyberwareAffinity != dataSkill) return;
+                if (__instance == null || Skill.Skill_CyberwareAffinity != dataSkill)
+                    return;
 
                 int[] bonii = Bonuses;
 
@@ -234,22 +267,28 @@ the default setting should match the base SRHK game (i.e. +1 additional essence 
                     // remove the previous references to essence addition
                     if (skillLevel == 3)
                     {
-                        block.SetToInfo(Strings.T("Unlocks \"Eviscerate\" for Hand Razors and Spurs"));
+                        block.SetToInfo(
+                            Strings.T("Unlocks \"Eviscerate\" for Hand Razors and Spurs")
+                        );
                     }
                     if (skillLevel == 6)
                     {
-                        block.SetToInfo(Strings.T("Cyberware can allow you to exceed racial maximums for Attributes."));
+                        block.SetToInfo(
+                            Strings.T(
+                                "Cyberware can allow you to exceed racial maximums for Attributes."
+                            )
+                        );
                     }
 
                     if (bonii.Length > skillLevel)
                     {
                         int bonus = bonii[skillLevel];
 
-                        block.SetToInfo(Strings.T($"+{bonus} Additional Essence. {block.infoText}"));
+                        block.SetToInfo(
+                            Strings.T($"+{bonus} Additional Essence. {block.infoText}")
+                        );
                     }
                 }
-
-
             }
         }
 #endif

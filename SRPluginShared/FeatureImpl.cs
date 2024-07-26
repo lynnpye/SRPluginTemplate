@@ -1,6 +1,6 @@
-﻿using BepInEx.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using BepInEx.Configuration;
 
 namespace SRPlugin
 {
@@ -25,7 +25,12 @@ namespace SRPlugin
 
     public class ConfigItem<T> : ConfigItemBase
     {
-        public static ConfigEntry<I_T> Bind<I_T>(string section, string key, I_T defaultValue, string description = null)
+        public static ConfigEntry<I_T> Bind<I_T>(
+            string section,
+            string key,
+            I_T defaultValue,
+            string description = null
+        )
         {
             if (description == null)
             {
@@ -65,11 +70,14 @@ namespace SRPlugin
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 
         public ConfigItem(string key, T defaultValue, string description = null)
-            : this(() => null, key, defaultValue, description)
-        {
-        }
+            : this(() => null, key, defaultValue, description) { }
 
-        public ConfigItem(Func<string> sectionNameGetter, string key, T defaultValue, string description = null)
+        public ConfigItem(
+            Func<string> sectionNameGetter,
+            string key,
+            T defaultValue,
+            string description = null
+        )
             : base(sectionNameGetter, key)
         {
             this.description = description;
@@ -78,7 +86,8 @@ namespace SRPlugin
 
         public override void SetFromString(string value)
         {
-            if (configEntry == null) return;
+            if (configEntry == null)
+                return;
 
             configEntry.SetSerializedValue(value);
         }
@@ -113,6 +122,7 @@ namespace SRPlugin
     public abstract class FeatureImpl
     {
         public static string PLUGIN_FEATURES_SECTION() => SRPlugin.FeatureSectionName;
+
         public static string FEATURES_SETTINGS_SECTION(Type featureImplType)
         {
             string sectionName = "Settings";
@@ -129,12 +139,17 @@ namespace SRPlugin
 
         protected List<ConfigItemBase> configItems;
         private List<PatchRecord> patchRecords;
+
         // only used if there is no enabling flag as the first config item
         private bool _localOnlyIsEnabled;
 
         public string SettingsSectionName() => $"{this.Name} Settings";
 
-        public FeatureImpl(string name, List<ConfigItemBase> configItems, List<PatchRecord> patchRecords)
+        public FeatureImpl(
+            string name,
+            List<ConfigItemBase> configItems,
+            List<PatchRecord> patchRecords
+        )
         {
             this.Name = name;
             this.configItems = configItems;
@@ -169,7 +184,8 @@ namespace SRPlugin
 
         protected bool MigrateSetting(string oldSection, string oldKey, ConfigItemBase targetItem)
         {
-            if (oldSection == null || oldKey == null || targetItem == null) return false;
+            if (oldSection == null || oldKey == null || targetItem == null)
+                return false;
 
             var orphans = SRPlugin.ConfigFile.GetOrphans();
 
@@ -193,7 +209,8 @@ namespace SRPlugin
 
         private Version MigrateConfigAfterBind(Version startingVersion)
         {
-            if (startingVersion == null) return null;
+            if (startingVersion == null)
+                return null;
 
             Version targetVersion = new Version(10, 0);
             if (startingVersion < targetVersion)
@@ -287,31 +304,24 @@ namespace SRPlugin
 
         public void Bind()
         {
-            if (configItems == null) return;
+            if (configItems == null)
+                return;
             foreach (var configItem in configItems)
             {
                 configItem.Bind(this);
             }
         }
 
-        public virtual void PreApplyPatches()
-        {
+        public virtual void PreApplyPatches() { }
 
-        }
+        public virtual void PostApplyPatches() { }
 
-        public virtual void PostApplyPatches()
-        {
-
-        }
-
-        public virtual void HandleDisabled()
-        {
-
-        }
+        public virtual void HandleDisabled() { }
 
         public void ApplyPatches()
         {
-            if (patchRecords == null) return;
+            if (patchRecords == null)
+                return;
             foreach (var patchRecord in patchRecords)
             {
                 patchRecord.Patch();
@@ -320,7 +330,8 @@ namespace SRPlugin
 
         public void UnapplyPatches()
         {
-            if (patchRecords == null) return;
+            if (patchRecords == null)
+                return;
             foreach (var patchRecord in patchRecords)
             {
                 patchRecord.Unpatch();

@@ -1,5 +1,5 @@
-﻿using HarmonyLib;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using HarmonyLib;
 
 namespace SRPlugin.Features.FixCharacterSheetArmor
 {
@@ -7,16 +7,7 @@ namespace SRPlugin.Features.FixCharacterSheetArmor
     {
 #if SRR
         public FixCharacterSheetArmorFeature()
-            : base(
-                null,
-                new List<ConfigItemBase>()
-                {
-                }, new List<PatchRecord>()
-                {
-                })
-        {
-
-        }
+            : base(null, new List<ConfigItemBase>() { }, new List<PatchRecord>() { }) { }
 #else
         private static ConfigItem<bool> CIFixCharacterSheetArmor;
 
@@ -25,23 +16,45 @@ namespace SRPlugin.Features.FixCharacterSheetArmor
                 nameof(FixCharacterSheetArmor),
                 new List<ConfigItemBase>()
                 {
-                    (CIFixCharacterSheetArmor = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(FixCharacterSheetArmor), true, "tries to fix the character sheet not always displaying correct armor values")),
-                }, new List<PatchRecord>(
-                        PatchRecord.RecordPatches(
-                            AccessTools.Method(typeof(CharacterSheetWidgetPatch), nameof(CharacterSheetWidgetPatch.InitializeFromPlayerPostfix)),
-                            AccessTools.Method(typeof(PDAPatch), nameof(PDAPatch.StartPDAPrefix)),
-                            AccessTools.Method(typeof(PDAPatch), nameof(PDAPatch.CloseEquipScreenPostfix)),
-                            AccessTools.Method(typeof(CyberwareScreenPatch), nameof(CyberwareScreenPatch.ConfirmPostfix)),
-                            AccessTools.Method(typeof(StoreScreenPatch), nameof(StoreScreenPatch.ConfirmPostfix))
-                            )
+                    (
+                        CIFixCharacterSheetArmor = new ConfigItem<bool>(
+                            PLUGIN_FEATURES_SECTION,
+                            nameof(FixCharacterSheetArmor),
+                            true,
+                            "tries to fix the character sheet not always displaying correct armor values"
+                        )
+                    ),
+                },
+                new List<PatchRecord>(
+                    PatchRecord.RecordPatches(
+                        AccessTools.Method(
+                            typeof(CharacterSheetWidgetPatch),
+                            nameof(CharacterSheetWidgetPatch.InitializeFromPlayerPostfix)
+                        ),
+                        AccessTools.Method(typeof(PDAPatch), nameof(PDAPatch.StartPDAPrefix)),
+                        AccessTools.Method(
+                            typeof(PDAPatch),
+                            nameof(PDAPatch.CloseEquipScreenPostfix)
+                        ),
+                        AccessTools.Method(
+                            typeof(CyberwareScreenPatch),
+                            nameof(CyberwareScreenPatch.ConfirmPostfix)
+                        ),
+                        AccessTools.Method(
+                            typeof(StoreScreenPatch),
+                            nameof(StoreScreenPatch.ConfirmPostfix)
+                        )
                     )
+                )
                 {
-                })
+                    }
+            ) { }
+
+        public static bool FixCharacterSheetArmor
         {
-
+            get => CIFixCharacterSheetArmor.GetValue();
+            set => CIFixCharacterSheetArmor.SetValue(value);
         }
-
-        public static bool FixCharacterSheetArmor { get => CIFixCharacterSheetArmor.GetValue(); set => CIFixCharacterSheetArmor.SetValue(value); }
 
         public static bool UpdatePlayerRPOnNextEquipScreenClose { get; set; }
 
@@ -50,9 +63,13 @@ namespace SRPlugin.Features.FixCharacterSheetArmor
         {
             [HarmonyPostfix]
             [HarmonyPatch(nameof(CharacterSheetWidget.InitializeFromPlayer))]
-            public static void InitializeFromPlayerPostfix(CharacterSheetWidget __instance, Player player)
+            public static void InitializeFromPlayerPostfix(
+                CharacterSheetWidget __instance,
+                Player player
+            )
             {
-                if (!FixCharacterSheetArmor) return;
+                if (!FixCharacterSheetArmor)
+                    return;
 
                 if (!(player == null))
                 {
@@ -69,7 +86,8 @@ namespace SRPlugin.Features.FixCharacterSheetArmor
             [HarmonyPatch(nameof(PDA.StartPDACharacter))]
             public static void StartPDAPrefix(PDA __instance)
             {
-                if (!FixCharacterSheetArmor) return;
+                if (!FixCharacterSheetArmor)
+                    return;
 
                 __instance.RefreshCharacter();
             }
@@ -78,9 +96,11 @@ namespace SRPlugin.Features.FixCharacterSheetArmor
             [HarmonyPatch(nameof(PDA.CloseEquipScreen))]
             public static void CloseEquipScreenPostfix()
             {
-                if (!FixCharacterSheetArmor) return;
+                if (!FixCharacterSheetArmor)
+                    return;
 
-                if (!UpdatePlayerRPOnNextEquipScreenClose) return;
+                if (!UpdatePlayerRPOnNextEquipScreenClose)
+                    return;
 
                 Player player = SceneSingletonBehavior<TurnDirector>.Instance.PlayerZero;
 
@@ -98,7 +118,8 @@ namespace SRPlugin.Features.FixCharacterSheetArmor
             [HarmonyPatch(nameof(CyberwareScreen.Confirm))]
             public static void ConfirmPostfix(Player ___thisPlayer)
             {
-                if (!FixCharacterSheetArmor) return;
+                if (!FixCharacterSheetArmor)
+                    return;
 
                 if (!(___thisPlayer == null))
                 {
@@ -114,7 +135,8 @@ namespace SRPlugin.Features.FixCharacterSheetArmor
             [HarmonyPatch("Confirm")]
             public static void ConfirmPostfix()
             {
-                if (!FixCharacterSheetArmor) return;
+                if (!FixCharacterSheetArmor)
+                    return;
 
                 UpdatePlayerRPOnNextEquipScreenClose = true;
             }

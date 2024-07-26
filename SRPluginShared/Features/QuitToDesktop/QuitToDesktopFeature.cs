@@ -1,10 +1,7 @@
-﻿using HarmonyLib;
-using Localize;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
+using HarmonyLib;
+using Localize;
 using UnityEngine;
 
 namespace SRPlugin.Features.QuitToDesktop
@@ -17,29 +14,63 @@ namespace SRPlugin.Features.QuitToDesktop
 
         public QuitToDesktopFeature()
             : base(
-                  nameof(QuitToDesktop),
-                  new List<ConfigItemBase>()
-                  {
-                      (CIQuitToDesktop = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(QuitToDesktop), true, "adds a button allowing you to quit to desktop from a game")),
-                      (CIRequireConfirmation = new ConfigItem<bool>(nameof(RequireConfirmation), true, "require confirmation to quit to desktop, false means one click and you're out so be careful!")),
-                      (CISkipMainMenuConfirmation = new ConfigItem<bool>(nameof(SkipMainMenuConfirmation), true, "no longer requires confirmation when clicking Exit from the Main Menu")),
-                  },
-                  new List<PatchRecord>(
-                      PatchRecord.RecordPatches(
-                          AccessTools.Method(typeof(PDAAnchorPatch), nameof(PDAAnchorPatch.AwakePostfix)),
-                          AccessTools.Method(typeof(PDAPatch), nameof(PDAPatch.OnEnterMenuPostfix)),
-                          AccessTools.Method(typeof(MainMenuScenePatch), nameof(MainMenuScenePatch.OnClickMessagePrefix))
-                          )
-                      )
-                  {
-                  })
+                nameof(QuitToDesktop),
+                [
+                    (
+                        CIQuitToDesktop = new ConfigItem<bool>(
+                            PLUGIN_FEATURES_SECTION,
+                            nameof(QuitToDesktop),
+                            true,
+                            "adds a button allowing you to quit to desktop from a game"
+                        )
+                    ),
+                    (
+                        CIRequireConfirmation = new ConfigItem<bool>(
+                            nameof(RequireConfirmation),
+                            true,
+                            "require confirmation to quit to desktop, false means one click and you're out so be careful!"
+                        )
+                    ),
+                    (
+                        CISkipMainMenuConfirmation = new ConfigItem<bool>(
+                            nameof(SkipMainMenuConfirmation),
+                            true,
+                            "no longer requires confirmation when clicking Exit from the Main Menu"
+                        )
+                    ),
+                ],
+                new List<PatchRecord>(
+                    PatchRecord.RecordPatches(
+                        AccessTools.Method(
+                            typeof(PDAAnchorPatch),
+                            nameof(PDAAnchorPatch.AwakePostfix)
+                        ),
+                        AccessTools.Method(typeof(PDAPatch), nameof(PDAPatch.OnEnterMenuPostfix)),
+                        AccessTools.Method(
+                            typeof(MainMenuScenePatch),
+                            nameof(MainMenuScenePatch.OnClickMessagePrefix)
+                        )
+                    )
+                )
+                {
+                    }
+            ) { }
+
+        public static bool QuitToDesktop
         {
-
+            get => CIQuitToDesktop.GetValue();
+            set => CIQuitToDesktop.SetValue(value);
         }
-
-        public static bool QuitToDesktop { get => CIQuitToDesktop.GetValue(); set => CIQuitToDesktop.SetValue( value ); }
-        public static bool RequireConfirmation { get => CIRequireConfirmation.GetValue(); set => CIRequireConfirmation.SetValue(value); }
-        public static bool SkipMainMenuConfirmation { get => CISkipMainMenuConfirmation.GetValue(); set => CISkipMainMenuConfirmation.SetValue(value); }
+        public static bool RequireConfirmation
+        {
+            get => CIRequireConfirmation.GetValue();
+            set => CIRequireConfirmation.SetValue(value);
+        }
+        public static bool SkipMainMenuConfirmation
+        {
+            get => CISkipMainMenuConfirmation.GetValue();
+            set => CISkipMainMenuConfirmation.SetValue(value);
+        }
 
         // ui element, global for all users
         private static UISlicedSprite qtdButtonBG;
@@ -81,18 +112,28 @@ namespace SRPlugin.Features.QuitToDesktop
                 // not strictly needed
                 return;
             }
-            
+
             string title =
 #if SRR || DFDC
-                Strings.T("Quit to Desktop")
-#elif SRHK
-                Strings.T("QUIT TO DESKTOP")
+            Strings.T("Quit to Desktop")
+#else
+            Strings.T("QUIT TO DESKTOP")
 #endif
-                ;
-            string confirmation = Strings.T("Are you sure you wish to quit to desktop? You will lose any unsaved progress.");
+            ;
+            string confirmation = Strings.T(
+                "Are you sure you wish to quit to desktop? You will lose any unsaved progress."
+            );
 
             qtdButtonHandler.IsPopupActive = true;
-            qtdConfirmPopup = FullscreenPopup.CreateFullscreenPopup(title, confirmation, 2, 0, 0, qtdButtonHandler.gameObject, 0);
+            qtdConfirmPopup = FullscreenPopup.CreateFullscreenPopup(
+                title,
+                confirmation,
+                2,
+                0,
+                0,
+                qtdButtonHandler.gameObject,
+                0
+            );
         }
 
         private static void CopyTransformValues(Transform target, Transform source)
@@ -168,7 +209,12 @@ namespace SRPlugin.Features.QuitToDesktop
                 qtdButtonUI.defaultColor = Constants.DARK_GOLD_COLOR;
 #if SRHK
                 qtdButtonUI.hover = Constants.ORANGE_COLOR;
-                qtdButtonUI.pressed = Utilities.AdjustHSBColor(Constants.ORANGE_COLOR, 1f, 1f, 0.75f);
+                qtdButtonUI.pressed = Utilities.AdjustHSBColor(
+                    Constants.ORANGE_COLOR,
+                    1f,
+                    1f,
+                    0.75f
+                );
 #endif
                 qtdButtonUI.UpdateColor(true, true);
                 qtdButtonUI.enabled = true;
@@ -184,7 +230,6 @@ namespace SRPlugin.Features.QuitToDesktop
         [HarmonyPatch(typeof(PDAAnchor))]
         public class PDAAnchorPatch
         {
-
             [HarmonyPostfix]
             [HarmonyPatch("Awake")]
             public static void AwakePostfix(PDAAnchor __instance)
@@ -194,13 +239,27 @@ namespace SRPlugin.Features.QuitToDesktop
                 // we create our button based on the Restart level button, and slide it up away from the other buttons
                 if (qtdButtonBG == null)
                 {
-                    qtdButtonBG = UnityEngine.Object.Instantiate(__instance.restartLevelButtonBG) as UISlicedSprite;
-                    qtdButtonText = UnityEngine.Object.Instantiate(__instance.restartLevelButtonText) as UILabel;
-                    qtdButtonUI = UnityEngine.Object.Instantiate(__instance.restartLevelButtonUI) as UIButton;
+                    qtdButtonBG =
+                        UnityEngine.Object.Instantiate(__instance.restartLevelButtonBG)
+                        as UISlicedSprite;
+                    qtdButtonText =
+                        UnityEngine.Object.Instantiate(__instance.restartLevelButtonText)
+                        as UILabel;
+                    qtdButtonUI =
+                        UnityEngine.Object.Instantiate(__instance.restartLevelButtonUI) as UIButton;
 
-                    CopyTransformValues(qtdButtonBG.transform, __instance.restartLevelButtonBG.transform);
-                    CopyTransformValues(qtdButtonText.transform, __instance.restartLevelButtonText.transform);
-                    CopyTransformValues(qtdButtonUI.transform, __instance.restartLevelButtonUI.transform);
+                    CopyTransformValues(
+                        qtdButtonBG.transform,
+                        __instance.restartLevelButtonBG.transform
+                    );
+                    CopyTransformValues(
+                        qtdButtonText.transform,
+                        __instance.restartLevelButtonText.transform
+                    );
+                    CopyTransformValues(
+                        qtdButtonUI.transform,
+                        __instance.restartLevelButtonUI.transform
+                    );
 
                     qtdButtonBG.name = "Background";
                     qtdButtonUI.name = "Background";
@@ -210,62 +269,67 @@ namespace SRPlugin.Features.QuitToDesktop
                     int moveUp =
 #if SRHK
                         150
-#elif SRR || DFDC
+#else
                         140
 #endif
-                        ;
+                    ;
 
-                    qtdButtonBG.transform.localPosition = qtdButtonBG.transform.localPosition + Vector3.up * moveUp;
-                    qtdButtonText.transform.localPosition = qtdButtonText.transform.localPosition + Vector3.up * moveUp * 0.5f;
-                    qtdButtonUI.transform.localPosition = qtdButtonUI.transform.localPosition + Vector3.up * moveUp;
+                    qtdButtonBG.transform.localPosition =
+                        qtdButtonBG.transform.localPosition + (Vector3.up * moveUp);
+                    qtdButtonText.transform.localPosition =
+                        qtdButtonText.transform.localPosition + (Vector3.up * moveUp * 0.5f);
+                    qtdButtonUI.transform.localPosition =
+                        qtdButtonUI.transform.localPosition + (Vector3.up * moveUp);
 
                     // and then we, if we want, we can adjust the whole set per-game
-                    var full = new List<Transform>([
-                        qtdButtonBG.transform, qtdButtonUI.transform,
-                        ]);
-                    var mids = new List<Transform>([
-                        __instance.restartLevelButtonBG.transform, __instance.restartLevelButtonUI.transform,
-                        __instance.loadGameButtonBG.transform, __instance.loadGameButtonUI.transform,
-                        __instance.saveGameButtonBG.transform, __instance.saveGameButtonUI.transform,
-                        __instance.mainMenuButtonBG.transform, __instance.mainMenuButtonUI.transform,
-                        __instance.restartLevelButtonText.transform,
-                        __instance.loadGameButtonText.transform,
-                        __instance.saveGameButtonText.transform,
-                        __instance.mainMenuButtonText.transform,
-                        ]);
-                    var half = new List<Transform>([
-                        qtdButtonText.transform,
-                        ]);
+                    List<Transform> full = new([qtdButtonBG.transform, qtdButtonUI.transform,]);
+                    List<Transform> mids =
+                        new(
+                            [
+                                __instance.restartLevelButtonBG.transform,
+                                __instance.restartLevelButtonUI.transform,
+                                __instance.loadGameButtonBG.transform,
+                                __instance.loadGameButtonUI.transform,
+                                __instance.saveGameButtonBG.transform,
+                                __instance.saveGameButtonUI.transform,
+                                __instance.mainMenuButtonBG.transform,
+                                __instance.mainMenuButtonUI.transform,
+                                __instance.restartLevelButtonText.transform,
+                                __instance.loadGameButtonText.transform,
+                                __instance.saveGameButtonText.transform,
+                                __instance.mainMenuButtonText.transform,
+                            ]
+                        );
+                    List<Transform> half = new([qtdButtonText.transform,]);
 
                     int moveDown =
 #if SRHK
                         25
-#elif SRR || DFDC
+#else
                         65
 #endif
-                        ;
+                    ;
 
                     foreach (Transform t in full)
                     {
-                        t.localPosition = t.localPosition + Vector3.down * moveDown;
+                        t.localPosition += Vector3.down * moveDown;
                     }
 
                     foreach (Transform t in mids)
                     {
-                        t.localPosition = t.localPosition + Vector3.down * moveDown *
+                        t.localPosition += Vector3.down * moveDown *
 #if SRHK
                             0.8f
-#elif SRR || DFDC
+#else
                             0.65f
 #endif
-                            ;
+                        ;
                     }
 
                     foreach (Transform t in half)
                     {
-                        t.localPosition = t.localPosition + Vector3.down * moveDown * 0.5f;
+                        t.localPosition += Vector3.down * moveDown * 0.5f;
                     }
-
 
                     qtdButtonHandler = qtdButtonBG.gameObject.AddComponent<UMEventHandler>();
 
@@ -300,15 +364,30 @@ namespace SRPlugin.Features.QuitToDesktop
                 qtdButtonText.color = Constants.WHITE_COLOR;
 
                 qtdButtonUI.duration = 0.1f;
-                qtdButtonUI.pressed = Utilities.AdjustHSBColor(Constants.DARK_GOLD_COLOR, 1f, 1f, 0.8f);
-                qtdButtonUI.hover = Utilities.AdjustHSBColor(Constants.DARK_GOLD_COLOR, 1f, 1f, 0.8f);
+                qtdButtonUI.pressed = Utilities.AdjustHSBColor(
+                    Constants.DARK_GOLD_COLOR,
+                    1f,
+                    1f,
+                    0.8f
+                );
+                qtdButtonUI.hover = Utilities.AdjustHSBColor(
+                    Constants.DARK_GOLD_COLOR,
+                    1f,
+                    1f,
+                    0.8f
+                );
                 qtdButtonUI.disabledColor = Constants.GREY_COLOR;
 #else
                 qtdButtonBG.color = Constants.DARK_GOLD_ALPHA34;
                 qtdButtonText.color = Constants.PALE_GOLD_COLOR;
 
                 qtdButtonUI.duration = 0.1f;
-                qtdButtonUI.pressed = Utilities.AdjustHSBColor(Constants.ORANGE_COLOR, 1f, 1f, 0.75f);
+                qtdButtonUI.pressed = Utilities.AdjustHSBColor(
+                    Constants.ORANGE_COLOR,
+                    1f,
+                    1f,
+                    0.75f
+                );
                 qtdButtonUI.hover = Constants.ORANGE_COLOR;
                 qtdButtonUI.disabledColor = Constants.DARK_GOLD_ALPHA34;
 #endif
@@ -316,7 +395,7 @@ namespace SRPlugin.Features.QuitToDesktop
                 // set text
 #if SRHK
                 qtdButtonText.text = Strings.T("QUIT TO DESKTOP");
-#elif SRR || DFDC
+#else
                 qtdButtonText.text = Strings.T("Quit to Desktop");
 #endif
 

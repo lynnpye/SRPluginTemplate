@@ -1,5 +1,5 @@
-﻿using HarmonyLib;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using HarmonyLib;
 
 namespace SRPlugin.Features.OverrideStartingKarma
 {
@@ -11,30 +11,53 @@ namespace SRPlugin.Features.OverrideStartingKarma
         public OverrideStartingKarmaFeature()
             : base(
                 nameof(EnableOverrideStartingKarma),
-                new List<ConfigItemBase>()
-                {
-                    (CIEnableOverrideStartingKarma = new ConfigItem<bool>(PLUGIN_FEATURES_SECTION, nameof(EnableOverrideStartingKarma), true, "setting to false prevents patching")),
-                    (CIOverrideStartingKarma = new ConfigItem<int>(nameof(OverrideStartingKarma), 60, "game default is 5; -1 also disables even with the feature enabled, but still patched"))
-                }, new List<PatchRecord>(
-                        PatchRecord.RecordPatches(
-                            AccessTools.Method(typeof(ConstantsPatch), nameof(ConstantsPatch.LoadDefaultsPostfix))
-                            )
+                [
+                    (
+                        CIEnableOverrideStartingKarma = new ConfigItem<bool>(
+                            PLUGIN_FEATURES_SECTION,
+                            nameof(EnableOverrideStartingKarma),
+                            true,
+                            "setting to false prevents patching"
+                        )
+                    ),
+                    (
+                        CIOverrideStartingKarma = new ConfigItem<int>(
+                            nameof(OverrideStartingKarma),
+                            60,
+                            "game default is 5; -1 also disables even with the feature enabled, but still patched"
+                        )
                     )
+                ],
+                new List<PatchRecord>(
+                    PatchRecord.RecordPatches(
+                        AccessTools.Method(
+                            typeof(ConstantsPatch),
+                            nameof(ConstantsPatch.LoadDefaultsPostfix)
+                        )
+                    )
+                )
                 {
-                })
-        {
-
-        }
+                    }
+            ) { }
 
         public override void HandleDisabled()
         {
             ResetStartingValues();
         }
 
-        public static int OverrideStartingKarma { get => CIOverrideStartingKarma.GetValue(); set => CIOverrideStartingKarma.SetValue(value); }
-        public static bool EnableOverrideStartingKarma { get => CIEnableOverrideStartingKarma.GetValue(); set => CIEnableOverrideStartingKarma.SetValue(value); }
+        public static int OverrideStartingKarma
+        {
+            get => CIOverrideStartingKarma.GetValue();
+            set => CIOverrideStartingKarma.SetValue(value);
+        }
+        public static bool EnableOverrideStartingKarma
+        {
+            get => CIEnableOverrideStartingKarma.GetValue();
+            set => CIEnableOverrideStartingKarma.SetValue(value);
+        }
 
-        private static OverrideableValue<int> OVStartingKarma = new OverrideableValue<int>(Constants.STARTING_KARMA_POINTS, (v) => Constants.STARTING_KARMA_POINTS = v);
+        private static readonly OverrideableValue<int> OVStartingKarma =
+            new(Constants.STARTING_KARMA_POINTS, (v) => Constants.STARTING_KARMA_POINTS = v);
 
         public static void ResetStartingValues()
         {
@@ -43,7 +66,10 @@ namespace SRPlugin.Features.OverrideStartingKarma
 
         public static void ApplyOverrideValues()
         {
-            if (!EnableOverrideStartingKarma) return;
+            if (!EnableOverrideStartingKarma)
+            {
+                return;
+            }
 
             if (OverrideStartingKarma >= 0)
             {

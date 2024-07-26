@@ -8,6 +8,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>disable</ImplicitUsings>
+	<SRDataDir>Dragonfall_Data</SRDataDir>
+	<SRInstallDir>$(DFDCInstallDir)</SRInstallDir>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -28,12 +30,17 @@
     <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
     <PackageReference Include="UnityEngine.Modules" Version="4.6.2" IncludeAssets="compile" />
     <Reference Include="ShadowrunDTO">
-      <HintPath>$([System.IO.Path]::Combine($(DFDCInstallDir), 'Dragonfall_Data\Managed\ShadowrunDTO.dll'))</HintPath>
+      <HintPath>$([System.IO.Path]::Combine($(SRInstallDir), '$(SRDataDir)\Managed\ShadowrunDTO.dll'))</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <ExternallyResolved>True</ExternallyResolved>
-      <HintPath>$([System.IO.Path]::Combine($(DFDCInstallDir), 'Dragonfall_Data\Managed\Assembly-CSharp.dll'))</HintPath>
+      <HintPath>$([System.IO.Path]::Combine($(SRInstallDir), '$(SRDataDir)\Managed\Assembly-CSharp.dll'))</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <ExternallyResolved>True</ExternallyResolved>
+      <HintPath>$([System.IO.Path]::Combine($(SRInstallDir), '$(SRDataDir)\Managed\Assembly-CSharp-firstpass.dll'))</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

@@ -18,7 +18,8 @@ namespace SRPlugin
 
         public void Reset()
         {
-            if (!wasSet) return;
+            if (!wasSet)
+                return;
             wasSet = false;
             setter(originalValue);
         }
