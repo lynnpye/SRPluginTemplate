@@ -20,14 +20,26 @@ namespace SRPlugin.Features.LoadLocalSaves
                             PLUGIN_FEATURES_SECTION,
                             nameof(LoadLocalSaves),
                             true,
-                            "enable loading local saves"
+                            $@"Enable loading local saves even when still connected to Steam; game default location is '{FileLoader.UserDataPath() + "/Saves/"}'
+This will only impact Steam versions since the cloud save system is Steam-only.
+This will now allow 'creating' a local save, per se, but since you can always
+obtain a locally cached copy of your Steam saves, you still have access.
+The SaveManager functionality essentially disables the local versions
+of save game handling when Steam is available. This makes the local areas
+readable.
+
+You can now drop a save game into a folder, install this plug-in, and load it up.
+You can share save games easily, or use it for testing. In fact, thanks goes to
+Nexusmods user spektukal for reporting the bug and providing a save game that
+made realize I needed a way to load them in Steam.
+"
                         )
                     ),
                     (
                         CIAlternateLocalSaveFolder = new ConfigItem<string>(
                             nameof(AlternateLocalSaveFolder),
                             "",
-                            "alternate folder to load local saves from"
+                            $"alternate folder to load local saves from; game default location is '{FileLoader.UserDataPath() + "/Saves/"}'"
                         )
                     )
                 ],
@@ -81,6 +93,19 @@ namespace SRPlugin.Features.LoadLocalSaves
             }
         }
 
+        /*
+         * Not really a reverse patch, but sort of behaves like it. Doing it
+         * without reverse patch in order to make sure we get the patched
+         * version above.
+         */
+        private static string SaveDirectoryReversePatch()
+        {
+            return AccessTools
+                .PropertyGetter(typeof(SaveManager), "SaveDirectory")
+                .Invoke(null, null)
+                .ToString();
+        }
+
         [HarmonyPatch(typeof(SaveManager))]
         internal class SaveManagerPatch
         {
@@ -95,19 +120,6 @@ namespace SRPlugin.Features.LoadLocalSaves
                 }
 
                 __result = AlternateLocalSaveFolder;
-            }
-
-            /*
-             * Not really a reverse patch, but sort of behaves like it. Doing it
-             * without reverse patch in order to make sure we get the patched
-             * version above.
-             */
-            private static string SaveDirectoryReversePatch()
-            {
-                return AccessTools
-                    .PropertyGetter(typeof(SaveManager), "SaveDirectory")
-                    .Invoke(null, null)
-                    .ToString();
             }
 
             // for LoadLocalSaves
