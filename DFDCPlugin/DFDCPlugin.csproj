@@ -4,7 +4,7 @@
     <TargetFramework>net35</TargetFramework>
     <AssemblyName>DFDCPlugin</AssemblyName>
     <Description>Shadowrun Dragonfall Director's Cut BepInEx Plugin Template</Description>
-    <Version>13.0.0</Version>
+    <Version>14.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>disable</ImplicitUsings>
