@@ -46,7 +46,6 @@ namespace SRPlugin.Features.NoUnspentKarmaPopup
             [HarmonyPatch(nameof(SceneDef.show_equip_screen_on_scene_load), MethodType.Getter)]
             public static void show_equip_screen_on_scene_load_postfix(ref bool __result)
             {
-                SRPlugin.Squawk($"show_equip_screen_on_scene_load_postfix is always false");
                 __result = false;
             }
         }

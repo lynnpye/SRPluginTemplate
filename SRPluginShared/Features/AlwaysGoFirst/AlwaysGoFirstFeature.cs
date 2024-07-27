@@ -41,32 +41,17 @@ namespace SRPlugin.Features.AlwaysGoFirst
         public override void PostApplyPatches()
         {
             combatEventListener = new CombatEventListener();
-            KeyMessenger<string, global::GenericArgs>.AddKeyListener(
-                GenericEvents.EVENT_ONCOMBATENTERED,
-                new KeyMessenger<string, global::GenericArgs>.KeyDelegate(
-                    combatEventListener.OnCombatEntered
+
+            KeyMessenger<TileGrid, Grid_FriendlyWorld_Event>.AddGlobalListener(
+                new KeyMessenger<TileGrid, Grid_FriendlyWorld_Event>.KeyDelegate(
+                    combatEventListener.OnFriendlyWorldChanged
                 )
             );
-            KeyMessenger<string, global::GenericArgs>.AddKeyListener(
-                GenericEvents.EVENT_ONCOMBATEXITED,
-                new KeyMessenger<string, global::GenericArgs>.KeyDelegate(
-                    combatEventListener.OnCombatExited
+            KeyMessenger<TileGrid, Grid_CombatWorld_Event>.AddGlobalListener(
+                new KeyMessenger<TileGrid, Grid_CombatWorld_Event>.KeyDelegate(
+                    combatEventListener.OnCombatWorldChanged
                 )
             );
-#if SRHK
-            KeyMessenger<string, global::GenericArgs>.AddKeyListener(
-                GenericEvents.EVENT_ONCOMBATINTENSE,
-                new KeyMessenger<string, global::GenericArgs>.KeyDelegate(
-                    combatEventListener.OnCombatIntense
-                )
-            );
-            KeyMessenger<string, global::GenericArgs>.AddKeyListener(
-                GenericEvents.EVENT_ONCOMBATWRAPUP,
-                new KeyMessenger<string, global::GenericArgs>.KeyDelegate(
-                    combatEventListener.OnCombatWrapup
-                )
-            );
-#endif
         }
 
         public override void HandleDisabled()
@@ -75,32 +60,6 @@ namespace SRPlugin.Features.AlwaysGoFirst
             {
                 return;
             }
-#if SRHK
-            KeyMessenger<string, global::GenericArgs>.RemoveKeyListener(
-                GenericEvents.EVENT_ONCOMBATWRAPUP,
-                new KeyMessenger<string, global::GenericArgs>.KeyDelegate(
-                    combatEventListener.OnCombatWrapup
-                )
-            );
-            KeyMessenger<string, global::GenericArgs>.RemoveKeyListener(
-                GenericEvents.EVENT_ONCOMBATINTENSE,
-                new KeyMessenger<string, global::GenericArgs>.KeyDelegate(
-                    combatEventListener.OnCombatIntense
-                )
-            );
-#endif
-            KeyMessenger<string, global::GenericArgs>.RemoveKeyListener(
-                GenericEvents.EVENT_ONCOMBATEXITED,
-                new KeyMessenger<string, global::GenericArgs>.KeyDelegate(
-                    combatEventListener.OnCombatExited
-                )
-            );
-            KeyMessenger<string, global::GenericArgs>.RemoveKeyListener(
-                GenericEvents.EVENT_ONCOMBATENTERED,
-                new KeyMessenger<string, global::GenericArgs>.KeyDelegate(
-                    combatEventListener.OnCombatEntered
-                )
-            );
             combatEventListener = null;
         }
 
@@ -109,27 +68,31 @@ namespace SRPlugin.Features.AlwaysGoFirst
 
         private class CombatEventListener
         {
-            public void OnCombatEntered(string key, global::GenericArgs inputs)
+            private bool inCombat = false;
+
+            private void SetCombatState(bool isFriendly)
             {
-                RigRating = true;
+                if (!inCombat && !isFriendly)
+                {
+                    RigRating = true;
+                    inCombat = true;
+                }
+                else if (isFriendly)
+                {
+                    RigRating = false;
+                    inCombat = false;
+                }
             }
 
-            public void OnCombatExited(string key, global::GenericArgs inputs)
+            public void OnFriendlyWorldChanged(TileGrid grid, Grid_FriendlyWorld_Event e)
             {
-                RigRating = false;
+                SetCombatState(e.isFriendlyWorld);
             }
 
-#if SRHK
-            public void OnCombatIntense(string key, global::GenericArgs inputs)
+            public void OnCombatWorldChanged(TileGrid grid, Grid_CombatWorld_Event e)
             {
-                RigRating = true;
+                SetCombatState(!e.isCombatWorld);
             }
-
-            public void OnCombatWrapup(string key, global::GenericArgs inputs)
-            {
-                RigRating = false;
-            }
-#endif
         }
 
         [HarmonyPatch(typeof(TurnDirector))]
