@@ -1,8 +1,10 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using HarmonyLib;
+using isogame;
+using UnityEngine;
 
 namespace SRPlugin.Features.LoadLocalSaves
 {
@@ -46,8 +48,24 @@ made realize I needed a way to load them in Steam.
                 new List<PatchRecord>(
                     PatchRecord.RecordPatches(
                         AccessTools.Method(
+                            typeof(LoadGameScreenPatch),
+                            nameof(LoadGameScreenPatch.SelectEntryPostfix)
+                        ),
+                        AccessTools.Method(
+                            typeof(LoadGameScreenPatch),
+                            nameof(LoadGameScreenPatch.SetToLoadScreenPostfix)
+                        ),
+                        AccessTools.Method(
                             typeof(SaveManagerPatch),
                             nameof(SaveManagerPatch.SaveDirectoryPropertyPatch)
+                        ),
+                        AccessTools.Method(
+                            typeof(SaveManagerPatch),
+                            nameof(SaveManagerPatch.LoadSaveGameFromIdPrefix)
+                        ),
+                        AccessTools.Method(
+                            typeof(SaveManagerPatch),
+                            nameof(SaveManagerPatch.LoadSaveGameFromIdPostfix)
                         ),
                         AccessTools.Method(
                             typeof(SaveManagerPatch),
@@ -106,6 +124,41 @@ made realize I needed a way to load them in Steam.
                 .ToString();
         }
 
+        // for preventing attempts to delete local saves
+        private static HashSet<string> SaveNamesTrackedForDeletionPrevention = [];
+
+        [HarmonyPatch(typeof(LoadGameScreen))]
+        internal class LoadGameScreenPatch
+        {
+            [HarmonyPostfix]
+            [HarmonyPatch(nameof(LoadGameScreen.SetToLoadScreen))]
+            public static IEnumerator SetToLoadScreenPostfix(IEnumerator __result)
+            {
+                SaveNamesTrackedForDeletionPrevention.Clear();
+
+                while (__result.MoveNext())
+                {
+                    yield return __result.Current;
+                }
+
+                yield break;
+            }
+
+            [HarmonyPostfix]
+            [HarmonyPatch(nameof(LoadGameScreen.SelectEntry))]
+            public static void SelectEntryPostfix(LoadGameEntry entry, GameObject ___deleteButton)
+            {
+                if (!LoadLocalSaves || !Steam.Steamworks.IsAvailable)
+                {
+                    return;
+                }
+                if (SaveNamesTrackedForDeletionPrevention.Contains(entry.saveGame.save_name))
+                {
+                    ___deleteButton.SetActive(false);
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(SaveManager))]
         internal class SaveManagerPatch
         {
@@ -121,6 +174,41 @@ made realize I needed a way to load them in Steam.
 
                 __result = AlternateLocalSaveFolder;
             }
+
+            [HarmonyPrefix]
+            [HarmonyPatch(nameof(SaveManager.LoadSaveGameFromId))]
+            public static void LoadSaveGameFromIdPrefix(string id)
+            {
+                loadingSaveGameFileName = null;
+            }
+
+            [HarmonyPostfix]
+            [HarmonyPatch(nameof(SaveManager.LoadSaveGameFromId))]
+            public static void LoadSaveGameFromIdPostfix(SaveGame __result, string id)
+            {
+                var checkLoaded = loadingSaveGameFileName;
+                loadingSaveGameFileName = null;
+
+                if (!LoadLocalSaves || !Steam.Steamworks.IsAvailable)
+                {
+                    return;
+                }
+
+                if (__result == null || checkLoaded == null)
+                {
+                    return;
+                }
+                if (!string.Equals(checkLoaded, id))
+                {
+                    SRPlugin.Squawk(
+                        $"loading save game postfix, but loadingSaveGameFileName:{checkLoaded}: and id:{id}:"
+                    );
+                    return; // this shouldn't happen
+                }
+                SaveNamesTrackedForDeletionPrevention.Add(__result.save_name);
+            }
+
+            private static string loadingSaveGameFileName = null;
 
             // for LoadLocalSaves
             [HarmonyPrefix]
@@ -139,20 +227,19 @@ made realize I needed a way to load them in Steam.
                     return true;
                 }
 
-                // if you got here, you're connected to steam and the file couldn't be found
+                // if you got here, you're connected to steam
                 // let's go
                 var fullSaveFileName = Path.GetFullPath(Path.Combine(saveFolder, filename));
                 var doesFileExist = File.Exists(fullSaveFileName);
                 if (doesFileExist)
                 {
+                    loadingSaveGameFileName = filename;
                     __result = File.ReadAllBytes(fullSaveFileName);
+
                     return false;
                 }
                 else
                 {
-                    SRPlugin.Squawk(
-                        $"requested file but File.Exists fails, bailing out: {fullSaveFileName}"
-                    );
                     return true;
                 }
             }

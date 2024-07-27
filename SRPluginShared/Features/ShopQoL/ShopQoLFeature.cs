@@ -12,8 +12,7 @@ namespace SRPlugin.Features.ShopQoL
         public ShopQoLFeature()
             : base(
                 nameof(ShopQoL),
-                new List<ConfigItemBase>()
-                {
+                [
                     (
                         CIShopQoL = new ConfigItem<bool>(
                             PLUGIN_FEATURES_SECTION,
@@ -22,7 +21,7 @@ namespace SRPlugin.Features.ShopQoL
                             "adds some QoL changes to the store experience"
                         )
                     ),
-                },
+                ],
                 new List<PatchRecord>(
                     PatchRecord.RecordPatches(
                         AccessTools.Method(
@@ -59,13 +58,14 @@ namespace SRPlugin.Features.ShopQoL
                 BetterList<StoreTab> ___activeTabList
             )
             {
-                if (!ShopQoL)
-                    yield break;
-
-                // run original enumerator code
                 while (__result.MoveNext())
                 {
                     yield return __result.Current;
+                }
+
+                if (!ShopQoL)
+                {
+                    yield break;
                 }
 
                 // now do our stuff
@@ -95,14 +95,20 @@ namespace SRPlugin.Features.ShopQoL
             )
             {
                 if (!ShopQoL)
+                {
                     return;
+                }
 
                 if (__instance == null || ___equipFilterList == null || ___equipFilterList.size < 2)
+                {
                     return;
+                }
 
                 var button0 = ___equipFilterList[0];
                 if (!string.Equals(button0?.label?.text, Strings.T("All")))
+                {
                     return;
+                }
 
                 AccessTools
                     .Method(typeof(EquipScreen), "SetActiveFilterButton")
