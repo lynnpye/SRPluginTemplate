@@ -56,25 +56,25 @@ namespace SRPlugin.Features.AlwaysBeSprinting
 
         private static readonly OverrideableValue<int> OVCombatSprint =
             new(
-                Constants.MOVE_THRESHOLD_COMBAT_SPRINT,
+                () => Constants.MOVE_THRESHOLD_COMBAT_SPRINT,
                 (v) => Constants.MOVE_THRESHOLD_COMBAT_SPRINT = v,
                 0
             );
         private static readonly OverrideableValue<int> OVCombatWalk =
             new(
-                Constants.MOVE_THRESHOLD_COMBAT_WALK,
+                () => Constants.MOVE_THRESHOLD_COMBAT_WALK,
                 (v) => Constants.MOVE_THRESHOLD_COMBAT_WALK = v,
                 0
             );
         private static readonly OverrideableValue<int> OVFriendlySprint =
             new(
-                Constants.MOVE_THRESHOLD_FRIENDLY_SPRINT,
+                () => Constants.MOVE_THRESHOLD_FRIENDLY_SPRINT,
                 (v) => Constants.MOVE_THRESHOLD_FRIENDLY_SPRINT = v,
                 0
             );
         private static readonly OverrideableValue<int> OVFriendlyWalk =
             new(
-                Constants.MOVE_THRESHOLD_FRIENDLY_WALK,
+                () => Constants.MOVE_THRESHOLD_FRIENDLY_WALK,
                 (v) => Constants.MOVE_THRESHOLD_FRIENDLY_WALK = v,
                 0
             );

@@ -12,8 +12,7 @@ namespace SRPlugin.Features.ReduceSpiritEscape
         public ReduceSpiritEscapeFeature()
             : base(
                 nameof(ReduceSpiritEscape),
-                new List<ConfigItemBase>()
-                {
+                [
                     (
                         CIReduceSpiritEscape = new ConfigItem<bool>(
                             PLUGIN_FEATURES_SECTION,
@@ -36,7 +35,7 @@ namespace SRPlugin.Features.ReduceSpiritEscape
                             "game default is 1.0; lower values reduce summon escape penalty due to AP refreshes"
                         )
                     ),
-                },
+                ],
                 new List<PatchRecord>(
                     PatchRecord.RecordPatches(
                         AccessTools.Method(
@@ -72,12 +71,12 @@ namespace SRPlugin.Features.ReduceSpiritEscape
 
         private static OverrideableValue<float> OVSummonDistancePenalty =
             new OverrideableValue<float>(
-                Constants.SHAMAN_DISTANCE_PENALTY_MOD,
+                () => Constants.SHAMAN_DISTANCE_PENALTY_MOD,
                 (v) => Constants.SHAMAN_DISTANCE_PENALTY_MOD = v
             );
         private static OverrideableValue<float> OVSummonAPRefreshPenalty =
             new OverrideableValue<float>(
-                Constants.SHAMAN_AP_REFRESH_PENALTY_MOD,
+                () => Constants.SHAMAN_AP_REFRESH_PENALTY_MOD,
                 (v) => Constants.SHAMAN_AP_REFRESH_PENALTY_MOD = v
             );
 
@@ -90,7 +89,9 @@ namespace SRPlugin.Features.ReduceSpiritEscape
         public static void ApplyOverrideValues()
         {
             if (!ReduceSpiritEscape)
+            {
                 return;
+            }
 
             if (SummonDistancePenalty >= 0)
             {

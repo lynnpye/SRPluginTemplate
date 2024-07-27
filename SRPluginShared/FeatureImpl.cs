@@ -17,7 +17,7 @@ namespace SRPlugin
         public ConfigItemBase(Func<string> sectionNameGetter, string key)
         {
             this.sectionNameGetter = sectionNameGetter;
-            this.Key = key;
+            Key = key;
         }
 
         public abstract void SetFromString(string value);
@@ -87,7 +87,9 @@ namespace SRPlugin
         public override void SetFromString(string value)
         {
             if (configEntry == null)
+            {
                 return;
+            }
 
             configEntry.SetSerializedValue(value);
         }
@@ -143,7 +145,7 @@ namespace SRPlugin
         // only used if there is no enabling flag as the first config item
         private bool _localOnlyIsEnabled;
 
-        public string SettingsSectionName() => $"{this.Name} Settings";
+        public string SettingsSectionName() => $"{Name} Settings";
 
         public FeatureImpl(
             string name,
@@ -151,7 +153,7 @@ namespace SRPlugin
             List<PatchRecord> patchRecords
         )
         {
-            this.Name = name;
+            Name = name;
             this.configItems = configItems;
             this.patchRecords = patchRecords;
 
@@ -185,7 +187,9 @@ namespace SRPlugin
         protected bool MigrateSetting(string oldSection, string oldKey, ConfigItemBase targetItem)
         {
             if (oldSection == null || oldKey == null || targetItem == null)
+            {
                 return false;
+            }
 
             var orphans = SRPlugin.ConfigFile.GetOrphans();
 
@@ -207,10 +211,17 @@ namespace SRPlugin
             return false;
         }
 
+        public static void Squawk(string msg, params object[] args)
+        {
+            SRPlugin.Squawk(msg, args);
+        }
+
         private Version MigrateConfigAfterBind(Version startingVersion)
         {
             if (startingVersion == null)
+            {
                 return null;
+            }
 
             Version targetVersion = new Version(10, 0);
             if (startingVersion < targetVersion)
@@ -305,7 +316,10 @@ namespace SRPlugin
         public void Bind()
         {
             if (configItems == null)
+            {
                 return;
+            }
+
             foreach (var configItem in configItems)
             {
                 configItem.Bind(this);
@@ -321,7 +335,10 @@ namespace SRPlugin
         public void ApplyPatches()
         {
             if (patchRecords == null)
+            {
                 return;
+            }
+
             foreach (var patchRecord in patchRecords)
             {
                 patchRecord.Patch();
@@ -331,7 +348,10 @@ namespace SRPlugin
         public void UnapplyPatches()
         {
             if (patchRecords == null)
+            {
                 return;
+            }
+
             foreach (var patchRecord in patchRecords)
             {
                 patchRecord.Unpatch();

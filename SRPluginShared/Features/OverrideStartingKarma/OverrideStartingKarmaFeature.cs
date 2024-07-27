@@ -57,11 +57,17 @@ namespace SRPlugin.Features.OverrideStartingKarma
         }
 
         private static readonly OverrideableValue<int> OVStartingKarma =
-            new(Constants.STARTING_KARMA_POINTS, (v) => Constants.STARTING_KARMA_POINTS = v);
+            new(() => Constants.STARTING_KARMA_POINTS, (v) => Constants.STARTING_KARMA_POINTS = v);
+        private static readonly OverrideableValue<int> OVStartingKarmaNoArchetype =
+            new OverrideableValue<int>(
+                () => Constants.STARTING_NO_ARCHETYPE_KARMA_POINTS,
+                (v) => Constants.STARTING_NO_ARCHETYPE_KARMA_POINTS = v
+            );
 
         public static void ResetStartingValues()
         {
             OVStartingKarma.Reset();
+            OVStartingKarmaNoArchetype.Reset();
         }
 
         public static void ApplyOverrideValues()
@@ -74,6 +80,10 @@ namespace SRPlugin.Features.OverrideStartingKarma
             if (OverrideStartingKarma >= 0)
             {
                 OVStartingKarma.Set(OverrideStartingKarma);
+                OVStartingKarmaNoArchetype.Set(
+                    OVStartingKarmaNoArchetype.GetOriginal()
+                        + (OverrideStartingKarma - OVStartingKarma.GetOriginal())
+                );
             }
         }
 
