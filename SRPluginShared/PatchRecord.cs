@@ -92,7 +92,7 @@ namespace SRPlugin
             try
             {
                 if (patches == null || patches.Length == 0)
-                    return null;
+                    return [];
 
                 List<PatchRecord> records = new List<PatchRecord>();
 
@@ -105,7 +105,7 @@ namespace SRPlugin
                         SRPlugin.Logger.LogInfo(
                             $"Method {patch.Name} is not a Harmony patch method."
                         );
-                        return null;
+                        return [];
                     }
 
                     var classHarmonyPatches =
@@ -116,7 +116,7 @@ namespace SRPlugin
                         SRPlugin.Logger.LogInfo(
                             $"Class {patch.DeclaringType.Name} is not a Harmony patch class."
                         );
-                        return null;
+                        return [];
                     }
 
                     int priority = Priority.Normal;
@@ -196,7 +196,7 @@ namespace SRPlugin
             {
                 SRPlugin.Squawk($"Exception while recording patches.");
                 SRPlugin.Squawk(e.ToString());
-                return null;
+                return [];
             }
         }
 
