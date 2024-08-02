@@ -6,20 +6,17 @@ using UnityEngine;
 
 namespace SRPlugin.Features.CyberwareAffinityEssenceBonusOverride
 {
+#if !SRHK
+#else
     public class CyberwareAffinityEssenceBonusOverrideFeature : FeatureImpl
     {
-#if !SRHK
-        public CyberwareAffinityEssenceBonusOverrideFeature()
-            : base(null, new List<ConfigItemBase>() { }, new List<PatchRecord>() { }) { }
-#else
         private static ConfigItem<bool> CICyberwareAffinityEssenceBonusesOverride;
         private static ConfigItem<string> CICyberwareAffinityEssenceBonuses;
 
         public CyberwareAffinityEssenceBonusOverrideFeature()
             : base(
                 nameof(CyberwareAffinityEssenceBonusesOverride),
-                new List<ConfigItemBase>()
-                {
+                [
                     (
                         CICyberwareAffinityEssenceBonusesOverride = new ConfigItem<bool>(
                             PLUGIN_FEATURES_SECTION,
@@ -35,7 +32,7 @@ namespace SRPlugin.Features.CyberwareAffinityEssenceBonusOverride
                             CAEssenceBonusHelp
                         )
                     ),
-                },
+                ],
                 new List<PatchRecord>(
                     PatchRecord.RecordPatches(
                         AccessTools.Method(
@@ -179,7 +176,9 @@ the default setting should match the base SRHK game (i.e. +1 additional essence 
             public static void GetSkillMaxPostfix(ref int __result, Skill entry)
             {
                 if (!CyberwareAffinityEssenceBonusesOverride)
+                {
                     return;
+                }
 
                 if (entry == Skill.Skill_CyberwareAffinity)
                 {
@@ -193,7 +192,9 @@ the default setting should match the base SRHK game (i.e. +1 additional essence 
             public static void GetSkillCapPostfix(ref int __result, Skill entry)
             {
                 if (!CyberwareAffinityEssenceBonusesOverride)
+                {
                     return;
+                }
 
                 if (entry == Skill.Skill_CyberwareAffinity)
                 {
@@ -210,7 +211,9 @@ the default setting should match the base SRHK game (i.e. +1 additional essence 
             public static void GetDerivedEssencePostfix(ref float __result, Actor __instance)
             {
                 if (!CyberwareAffinityEssenceBonusesOverride)
+                {
                     return;
+                }
 
                 int cyberwareAffinity = StatsUtil.GetSkill(
                     __instance,
@@ -246,7 +249,9 @@ the default setting should match the base SRHK game (i.e. +1 additional essence 
             )
             {
                 if (!CyberwareAffinityEssenceBonusesOverride)
+                {
                     return;
+                }
 
                 // no, we are not modifying anything, we are peeking tyvm
 #pragma warning disable Harmony003 // Harmony non-ref patch parameters modified
@@ -254,7 +259,9 @@ the default setting should match the base SRHK game (i.e. +1 additional essence 
 #pragma warning restore Harmony003 // Harmony non-ref patch parameters modified
 
                 if (__instance == null || Skill.Skill_CyberwareAffinity != dataSkill)
+                {
                     return;
+                }
 
                 int[] bonii = Bonuses;
 
@@ -291,6 +298,6 @@ the default setting should match the base SRHK game (i.e. +1 additional essence 
                 }
             }
         }
-#endif
     }
+#endif
 }

@@ -3,19 +3,16 @@ using HarmonyLib;
 
 namespace SRPlugin.Features.FixCharacterSheetArmor
 {
+#if SRR
+#else
     public class FixCharacterSheetArmorFeature : FeatureImpl
     {
-#if SRR
-        public FixCharacterSheetArmorFeature()
-            : base(null, new List<ConfigItemBase>() { }, new List<PatchRecord>() { }) { }
-#else
         private static ConfigItem<bool> CIFixCharacterSheetArmor;
 
         public FixCharacterSheetArmorFeature()
             : base(
                 nameof(FixCharacterSheetArmor),
-                new List<ConfigItemBase>()
-                {
+                [
                     (
                         CIFixCharacterSheetArmor = new ConfigItem<bool>(
                             PLUGIN_FEATURES_SECTION,
@@ -24,7 +21,7 @@ namespace SRPlugin.Features.FixCharacterSheetArmor
                             "tries to fix the character sheet not always displaying correct armor values"
                         )
                     ),
-                },
+                ],
                 new List<PatchRecord>(
                     PatchRecord.RecordPatches(
                         AccessTools.Method(
@@ -69,7 +66,9 @@ namespace SRPlugin.Features.FixCharacterSheetArmor
             )
             {
                 if (!FixCharacterSheetArmor)
+                {
                     return;
+                }
 
                 if (!(player == null))
                 {
@@ -87,7 +86,9 @@ namespace SRPlugin.Features.FixCharacterSheetArmor
             public static void StartPDAPrefix(PDA __instance)
             {
                 if (!FixCharacterSheetArmor)
+                {
                     return;
+                }
 
                 __instance.RefreshCharacter();
             }
@@ -97,10 +98,14 @@ namespace SRPlugin.Features.FixCharacterSheetArmor
             public static void CloseEquipScreenPostfix()
             {
                 if (!FixCharacterSheetArmor)
+                {
                     return;
+                }
 
                 if (!UpdatePlayerRPOnNextEquipScreenClose)
+                {
                     return;
+                }
 
                 Player player = SceneSingletonBehavior<TurnDirector>.Instance.PlayerZero;
 
@@ -119,7 +124,9 @@ namespace SRPlugin.Features.FixCharacterSheetArmor
             public static void ConfirmPostfix(Player ___thisPlayer)
             {
                 if (!FixCharacterSheetArmor)
+                {
                     return;
+                }
 
                 if (!(___thisPlayer == null))
                 {
@@ -136,11 +143,13 @@ namespace SRPlugin.Features.FixCharacterSheetArmor
             public static void ConfirmPostfix()
             {
                 if (!FixCharacterSheetArmor)
+                {
                     return;
+                }
 
                 UpdatePlayerRPOnNextEquipScreenClose = true;
             }
         }
-#endif
     }
+#endif
 }
